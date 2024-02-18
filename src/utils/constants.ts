@@ -1,4 +1,4 @@
-export const COMPANY_NAME = "Relance";
+export const COMPANY_NAME = "Formbox";
 
 /**
  * The default redirect path after logging in
@@ -15,6 +15,20 @@ export const PHONE_NUMBER_REGEX =
   /^\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/;
 
 export const FILTER_TAKE = 20;
+
+export const DEFAULT_REDIRECTS = {
+  home: "https://formbox.app",
+  formbox: "https://formbox.app",
+  auth: "https://app.formbox.app/auth/login",
+  signin: "https://app.formbox.app/login",
+  login: "https://app.formbox.app/login",
+  register: "https://app.formbox.app/signup",
+  signup: "https://app.formbox.app/signup",
+  app: "https://app.formbox.app",
+  dashboard: "https://app.formbox.app",
+  settings: "https://app.formbox.app/settings",
+  onboarding: "https://app.formbox.co/onboarding",
+};
 
 export const HttpStatus = {
   CONTINUE: 100,

@@ -30,7 +30,6 @@ export const useUserUpdateMutation = (
       options.showToast &&
         toast.success("Account updated", {
           description: "Your account has been successfully updated!",
-          closeButton: true,
         });
     },
     onError: (error, _, ctx) => {
@@ -38,7 +37,6 @@ export const useUserUpdateMutation = (
       apiUtils.user.getUser.setData(void {}, ctx?.previousQueryData);
       toast.error("Something went wrong!", {
         description: "An error occured while trying to update your profile.",
-        closeButton: true,
       });
     },
     onSettled: async () => {

@@ -45,27 +45,28 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(auto()) @map("_id") @db.ObjectId
-    name          String?
-    firstName     String?
-    lastName      String?
-    email         String?   @unique
-    password      String?
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
-
+    id                       String            @id @default(auto()) @map("_id") @db.ObjectId
+    name                     String?
+    firstName                String?
+    lastName                 String?
+    email                    String?           @unique
+    password                 String?
+    emailVerified            DateTime?
+    image                    String?
+    accounts                 Account[]
+    sessions                 Session[]
     stripeCustomerId         String?
     stripeSubscriptionId     String?
     stripePriceId            String?
     stripeSubscriptionStatus String?
     stripePlanNickname       String?
-    stripeCancelAtPeriodEnd  Boolean?  @default(false)
+    stripeCancelAtPeriodEnd  Boolean?          @default(false)
     stripeCurrentPeriodEnd   DateTime?
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    orgs                     Org[]
+    workspaceMembers         WorkspaceMember[]
+    orgMembers               OrgMember[]
+    createdAt                DateTime          @default(now())
+    updatedAt                DateTime          @updatedAt
 
     @@map("users")
 }
@@ -80,4 +81,89 @@ model VerificationToken {
 
     @@unique([identifier, token])
     @@map("verificationTokens")
+}
+
+model Org {
+    id              String            @id @default(auto()) @map("_id") @db.ObjectId
+    name            String?
+    slug            String?           @unique
+    userId          String            @db.ObjectId
+    user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+    invites         OrgInvite[]
+    members         OrgMember[]
+    workspaces      Workspace[]
+    createdAt       DateTime          @default(now())
+    updatedAt       DateTime          @updatedAt
+    WorkspaceMember WorkspaceMember[]
+
+    @@map("organizations")
+}
+
+model OrgInvite {
+    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+    email     String
+    expires   DateTime
+    org       Org      @relation(fields: [orgId], references: [id], onDelete: Cascade)
+    orgId     String   @db.ObjectId
+    createdAt DateTime @default(now())
+
+    @@unique([email, orgId])
+    @@map("organizationInvites")
+}
+
+model OrgMember {
+    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+    role      String   @default("member")
+    org       Org      @relation(fields: [orgId], references: [id], onDelete: Cascade)
+    orgId     String   @db.ObjectId
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    userId    String   @db.ObjectId
+    user      User     @relation(fields: [userId], references: [id])
+
+    @@unique([orgId])
+    @@map("organizationMembers")
+}
+
+model Workspace {
+    id        String            @id @default(auto()) @map("_id") @db.ObjectId
+    name      String?
+    createdAt DateTime          @default(now())
+    updatedAt DateTime          @updatedAt
+    // forms     Form[]
+    invites   WorkspaceInvite[]
+    members   WorkspaceMember[]
+    org       Org               @relation(fields: [orgId], references: [id], onDelete: Cascade)
+    orgId     String            @db.ObjectId
+    isPrivate Boolean           @default(false)
+
+    @@map("workspaces")
+}
+
+model WorkspaceInvite {
+    id          String    @id @default(auto()) @map("_id") @db.ObjectId
+    email       String
+    expires     DateTime
+    workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+    workspaceId String    @db.ObjectId
+    createdAt   DateTime  @default(now())
+
+    @@unique([email, workspaceId])
+    @@map("workspaceInvites")
+}
+
+model WorkspaceMember {
+    id          String    @id @default(auto()) @map("_id") @db.ObjectId
+    role        String    @default("member")
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+    org         Org       @relation(fields: [orgId], references: [id], onDelete: Cascade)
+    orgId       String    @db.ObjectId
+    workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+    workspaceId String    @db.ObjectId
+    userId      String    @db.ObjectId
+    user        User      @relation(fields: [userId], references: [id])
+
+    @@unique([userId, orgId, workspaceId])
+    @@map("workspaceMembers")
 }

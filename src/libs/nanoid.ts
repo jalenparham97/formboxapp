@@ -1,6 +1,5 @@
 import { customAlphabet } from "nanoid";
 
-const alphabet =
-  "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+const alphabet = "abcdefghijklmnopqrstuvwxyz";
 
-export const nanoid = customAlphabet(alphabet, 21);
+export const nanoid = (size: number = 21) => customAlphabet(alphabet, size)();
