@@ -25,9 +25,12 @@ import { WorkspaceDashboardInviteDialog } from "../workspaces/workspace-dashboar
 import { formatWorkspaces } from "@/utils/format-workspaces";
 import { type WorkspacesOutput } from "@/types/workspace.types";
 import { Button } from "../ui/button";
+import { Skeleton } from "../ui/skeleton";
+
+const loadingWorkspaces = new Array(3).fill("");
 
 interface Props {
-  initialData: WorkspacesOutput;
+  initialData?: WorkspacesOutput;
 }
 
 export function DashboardView({ initialData }: Props) {
@@ -38,7 +41,7 @@ export function DashboardView({ initialData }: Props) {
   const [inviteModal, inviteModalHandler] = useDialog();
   const [limitReachedModal, limitReachedModalHandlers] = useDialog();
 
-  const workspaces = useInfiniteWorkspaces({ searchString }, initialData);
+  const workspaces = useInfiniteWorkspaces({ searchString });
 
   useEffect(() => {
     if (workspaces.hasNextPage && inView) {
@@ -120,68 +123,82 @@ export function DashboardView({ initialData }: Props) {
         </div>
       </div>
 
-      {!isEmpty(data) && (
+      {workspaces.isLoading && (
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          {loadingWorkspaces.map((_, index) => (
+            <Skeleton key={index} className="h-[132px] rounded-xl shadow-sm" />
+          ))}
+        </div>
+      )}
+
+      {!workspaces.isLoading && (
         <>
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-            {data?.map((workspace) => (
-              <Card
-                key={workspace.id}
-                className="border border-gray-200 p-7 shadow-sm hover:border-gray-300"
-              >
-                <div className="flex items-center justify-between">
-                  <Link
-                    href={`/workspaces/${workspace.id}`}
-                    className="text-dark-900 no-underline"
+          {!isEmpty(data) && (
+            <>
+              <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+                {data?.map((workspace) => (
+                  <Card
+                    key={workspace.id}
+                    className="border border-gray-200 p-7 shadow-sm hover:border-gray-300"
                   >
-                    <h3 className="text-xl font-semibold">{workspace.name}</h3>
-                  </Link>
-                  <WorkspaceCardActionMenu workspace={workspace} />
-                </div>
+                    <div className="flex items-center justify-between">
+                      <Link
+                        href={`/workspaces/${workspace.id}`}
+                        className="text-dark-900 no-underline"
+                      >
+                        <h3 className="text-xl font-semibold">
+                          {workspace.name}
+                        </h3>
+                      </Link>
+                      <WorkspaceCardActionMenu workspace={workspace} />
+                    </div>
 
-                <div className="mt-5 flex items-center space-x-3">
-                  <div className="flex items-center space-x-1 text-gray-600">
-                    <IconFileDescription size={16} /> <span>0 forms</span>
-                  </div>
-                  <div className="flex items-center space-x-1 text-gray-500">
-                    <IconUsers size={16} />{" "}
-                    <span>
-                      {workspace._count.members} member
-                      {workspace._count.members > 1 ? "s" : ""}
-                    </span>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
+                    <div className="mt-5 flex items-center space-x-3">
+                      <div className="flex items-center space-x-1 text-gray-600">
+                        <IconFileDescription size={16} /> <span>0 forms</span>
+                      </div>
+                      <div className="flex items-center space-x-1 text-gray-500">
+                        <IconUsers size={16} />{" "}
+                        <span>
+                          {workspace._count.members} member
+                          {workspace._count.members > 1 ? "s" : ""}
+                        </span>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </>
+          )}
+
+          {isEmpty(data) && !noSearchResults && (
+            <div className="mt-20">
+              <EmptyState
+                title="No workspaces yet"
+                subtitle="Get started by creating a new workspace."
+                icon={<IconFolder size={40} />}
+                actionButton={
+                  <Button
+                    leftIcon={<IconPlus size={16} />}
+                    onClick={openWorspaceCreateModal}
+                  >
+                    Create workspace
+                  </Button>
+                }
+              />
+            </div>
+          )}
+
+          {noSearchResults && (
+            <div className="mt-24">
+              <EmptyState
+                title="No search results"
+                subtitle="Please check the spelling or filter criteria"
+                icon={<IconFolder size={40} />}
+              />
+            </div>
+          )}
         </>
-      )}
-
-      {isEmpty(data) && !noSearchResults && (
-        <div className="mt-20">
-          <EmptyState
-            title="No workspaces yet"
-            subtitle="Get started by creating a new workspace."
-            icon={<IconFolder size={40} />}
-            actionButton={
-              <Button
-                leftIcon={<IconPlus size={16} />}
-                onClick={openWorspaceCreateModal}
-              >
-                Create workspace
-              </Button>
-            }
-          />
-        </div>
-      )}
-
-      {noSearchResults && (
-        <div className="mt-24">
-          <EmptyState
-            title="No search results"
-            subtitle="Please check the spelling or filter criteria"
-            icon={<IconFolder size={40} />}
-          />
-        </div>
       )}
 
       <div ref={ref} className="text-center">

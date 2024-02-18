@@ -3,7 +3,6 @@ import { userRouter } from "./routers/user.router";
 import { storageRouter } from "./routers/storage.router";
 import { paymentRouter } from "./routers/payment.router";
 import { workspacesRouter } from "./routers/workspace.router";
-import { orgRouter } from "./routers/org.router";
 
 /**
  * This is the primary router for your server.
@@ -14,7 +13,6 @@ export const appRouter = createTRPCRouter({
   user: userRouter,
   storage: storageRouter,
   payment: paymentRouter,
-  org: orgRouter,
   workspace: workspacesRouter,
 });
 

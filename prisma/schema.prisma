@@ -62,9 +62,8 @@ model User {
     stripePlanNickname       String?
     stripeCancelAtPeriodEnd  Boolean?          @default(false)
     stripeCurrentPeriodEnd   DateTime?
-    orgs                     Org[]
     workspaceMembers         WorkspaceMember[]
-    orgMembers               OrgMember[]
+    workspace                Workspace[]
     createdAt                DateTime          @default(now())
     updatedAt                DateTime          @updatedAt
 
@@ -83,59 +82,58 @@ model VerificationToken {
     @@map("verificationTokens")
 }
 
-model Org {
-    id              String            @id @default(auto()) @map("_id") @db.ObjectId
-    name            String?
-    slug            String?           @unique
-    userId          String            @db.ObjectId
-    user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-    invites         OrgInvite[]
-    members         OrgMember[]
-    workspaces      Workspace[]
-    createdAt       DateTime          @default(now())
-    updatedAt       DateTime          @updatedAt
-    WorkspaceMember WorkspaceMember[]
+// model Org {
+//     id              String            @id @default(auto()) @map("_id") @db.ObjectId
+//     name            String?
+//     slug            String?           @unique
+//     userId          String            @db.ObjectId
+//     user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+//     invites         OrgInvite[]
+//     members         OrgMember[]
+//     workspaces      Workspace[]
+//     createdAt       DateTime          @default(now())
+//     updatedAt       DateTime          @updatedAt
+//     WorkspaceMember WorkspaceMember[]
 
-    @@map("organizations")
-}
+//     @@map("organizations")
+// }
 
-model OrgInvite {
-    id        String   @id @default(auto()) @map("_id") @db.ObjectId
-    email     String
-    expires   DateTime
-    org       Org      @relation(fields: [orgId], references: [id], onDelete: Cascade)
-    orgId     String   @db.ObjectId
-    createdAt DateTime @default(now())
+// model OrgInvite {
+//     id        String   @id @default(auto()) @map("_id") @db.ObjectId
+//     email     String
+//     expires   DateTime
+//     org       Org      @relation(fields: [orgId], references: [id], onDelete: Cascade)
+//     orgId     String   @db.ObjectId
+//     createdAt DateTime @default(now())
 
-    @@unique([email, orgId])
-    @@map("organizationInvites")
-}
+//     @@unique([email, orgId])
+//     @@map("organizationInvites")
+// }
 
-model OrgMember {
-    id        String   @id @default(auto()) @map("_id") @db.ObjectId
-    role      String   @default("member")
-    org       Org      @relation(fields: [orgId], references: [id], onDelete: Cascade)
-    orgId     String   @db.ObjectId
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    userId    String   @db.ObjectId
-    user      User     @relation(fields: [userId], references: [id])
+// model OrgMember {
+//     id        String   @id @default(auto()) @map("_id") @db.ObjectId
+//     role      String   @default("member")
+//     org       Org      @relation(fields: [orgId], references: [id], onDelete: Cascade)
+//     orgId     String   @db.ObjectId
+//     createdAt DateTime @default(now())
+//     updatedAt DateTime @updatedAt
+//     userId    String   @db.ObjectId
+//     user      User     @relation(fields: [userId], references: [id])
 
-    @@unique([orgId])
-    @@map("organizationMembers")
-}
+//     @@unique([orgId])
+//     @@map("organizationMembers")
+// }
 
 model Workspace {
     id        String            @id @default(auto()) @map("_id") @db.ObjectId
     name      String?
+    userId    String            @db.ObjectId
     createdAt DateTime          @default(now())
     updatedAt DateTime          @updatedAt
+    user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
     // forms     Form[]
     invites   WorkspaceInvite[]
     members   WorkspaceMember[]
-    org       Org               @relation(fields: [orgId], references: [id], onDelete: Cascade)
-    orgId     String            @db.ObjectId
-    isPrivate Boolean           @default(false)
 
     @@map("workspaces")
 }
@@ -157,13 +155,11 @@ model WorkspaceMember {
     role        String    @default("member")
     createdAt   DateTime  @default(now())
     updatedAt   DateTime  @updatedAt
-    org         Org       @relation(fields: [orgId], references: [id], onDelete: Cascade)
-    orgId       String    @db.ObjectId
+    user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId      String    @db.ObjectId
     workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
     workspaceId String    @db.ObjectId
-    userId      String    @db.ObjectId
-    user        User      @relation(fields: [userId], references: [id])
 
-    @@unique([userId, orgId, workspaceId])
+    @@unique([userId, workspaceId])
     @@map("workspaceMembers")
 }

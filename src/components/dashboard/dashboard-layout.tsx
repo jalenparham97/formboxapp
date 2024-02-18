@@ -44,7 +44,6 @@ import { signOut } from "next-auth/react";
 import { usePathname, useSelectedLayoutSegment } from "next/navigation";
 import { WorkspaceCreateDialog } from "../workspaces/workspace-create-dialog";
 import { OrgSwitcher } from "../orgs/org-switcher";
-import { useOrgs } from "@/queries/org.queries";
 
 export const formatWorkspaces = (workspaces: InfiniteWorkspacesData) => {
   let data: Workspace[] = [];
@@ -73,7 +72,6 @@ interface Props {
 }
 
 export function DashboardLayout({ children }: Props) {
-  const orgs = useOrgs();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [limitReachedModal, limitReachedModalHandlers] = useDialog();
   const { setWorkspaceModalState } = useWorkspaceModalState();
@@ -411,12 +409,12 @@ export function DashboardLayout({ children }: Props) {
 
             <div className="flex flex-1 items-center justify-between gap-x-4 self-stretch lg:gap-x-6">
               <div className="lg:-ml-4">
-                {orgs.isLoading && (
+                {/* {orgs.isLoading && (
                   <Skeleton className="h-[40px] w-[200px] rounded-lg" />
                 )}
                 {!orgs.isLoading && orgs.data?.data && (
                   <OrgSwitcher orgs={orgs.data?.data} />
-                )}
+                )} */}
               </div>
               <div className="flex items-center gap-x-4 lg:gap-x-6">
                 <button

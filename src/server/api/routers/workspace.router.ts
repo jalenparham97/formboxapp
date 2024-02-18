@@ -14,20 +14,18 @@ export const workspacesRouter = createTRPCRouter({
     .input(
       z.object({
         name: z.string(),
-        orgId: z.string(),
-        userId: z.string(),
-        isPrivate: z.boolean().default(false),
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const userId = ctx.user.id;
       return await ctx.db.workspace.create({
         data: {
           ...input,
+          userId,
           members: {
             create: {
-              userId: input.userId,
-              orgId: input.orgId,
-              role: WorkspaceRoles.MEMBER,
+              userId,
+              role: WorkspaceRoles.OWNER,
             },
           },
         },
@@ -53,11 +51,11 @@ export const workspacesRouter = createTRPCRouter({
           },
         },
         include: {
-          // user: {
-          //   select: {
-          //     stripePlanNickname: true,
-          //   },
-          // },
+          user: {
+            select: {
+              stripePlanNickname: true,
+            },
+          },
           // _count: {
           //   select: {
           //     forms: true,
