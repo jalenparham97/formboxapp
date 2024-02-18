@@ -17,6 +17,12 @@ export type FormProps<T> = {
   clearError?: () => void;
 };
 
+export const Roles = {
+  OWNER: "owner",
+  ADMIN: "admin",
+  MEMBER: "member",
+} as const;
+
 export const MIME_TYPES = {
   // Images
   png: "image/png",

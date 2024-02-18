@@ -36,6 +36,7 @@ export const {
   session: { strategy: "jwt" },
   pages: {
     signIn: "/auth/login",
+    newUser: "/onboarding",
   },
   events: {
     async linkAccount({ user }) {

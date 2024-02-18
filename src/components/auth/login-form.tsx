@@ -66,7 +66,7 @@ export function LoginForm() {
 
       <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-[450px]">
         <div className="rounded-xl border border-gray-300 bg-white px-10 py-8 shadow-sm">
-          <h2 className="text-2xl font-bold leading-9 text-gray-900">
+          <h2 className="text-xl font-bold leading-9 text-gray-900">
             Sign in to your account
           </h2>
           <p className="mt-3 text-sm text-gray-600">

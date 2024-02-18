@@ -8,17 +8,15 @@ interface Props {
 
 export function SettingsLayout({ children }: Props) {
   return (
-    <MaxWidthWrapper>
+    <MaxWidthWrapper className="py-10">
       <div>
         <PageTitle>Settings</PageTitle>
       </div>
       <div className="mt-6">
         <NavTabs className="">
-          <NavTab href="/dashboard/settings" label="Profile" />
-          <NavTab
-            href="/dashboard/settings/subscription"
-            label="Subscription"
-          />
+          <NavTab href="/settings" label="Account" />
+          <NavTab href="/settings/subscription" label="Subscription" />
+          <NavTab href="/settings/members" label="Members" />
         </NavTabs>
 
         <div className="pt-6">{children}</div>

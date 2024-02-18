@@ -9,7 +9,7 @@ import { useFileUploadUrlMutation } from "@/queries/storage.queries";
 import { useUser, useUserUpdateMutation } from "@/queries/user.queries";
 import type { UserNameFields, UserWithAccounts } from "@/types/user.types";
 import { getInitials } from "@/utils/get-initials";
-import { UserSchema } from "@/utils/validations/user.validations";
+import { UserSchema } from "@/utils/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { ImageUploader } from "@/components/ui/image-uploader";

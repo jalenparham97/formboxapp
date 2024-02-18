@@ -1,4 +1,3 @@
-import { type ReactNode } from "react";
 import { cn } from "@/utils/tailwind-helpers";
 
 export function MaxWidthWrapper({
@@ -6,15 +5,10 @@ export function MaxWidthWrapper({
   children,
 }: {
   className?: string;
-  children: ReactNode;
+  children: React.ReactNode;
 }) {
   return (
-    <div
-      className={cn(
-        "mx-auto w-full max-w-screen-2xl px-2.5 md:px-20",
-        className,
-      )}
-    >
+    <div className={cn("mx-auto max-w-7xl px-4 sm:px-8 lg:px-10", className)}>
       {children}
     </div>
   );

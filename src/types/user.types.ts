@@ -1,5 +1,5 @@
 import { type RouterOutputs } from "@/trpc/shared";
-import type { UserSchema } from "@/utils/validations/user.validations";
+import type { UserSchema } from "@/utils/schemas";
 import type { z } from "zod";
 
 export type UserWithAccounts = RouterOutputs["user"]["getUser"];
