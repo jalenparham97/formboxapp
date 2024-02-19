@@ -16,7 +16,6 @@ export function SettingsLayout({ children }: Props) {
         <NavTabs className="">
           <NavTab href="/settings" label="Account" />
           <NavTab href="/settings/subscription" label="Subscription" />
-          <NavTab href="/settings/members" label="Members" />
         </NavTabs>
 
         <div className="pt-6">{children}</div>

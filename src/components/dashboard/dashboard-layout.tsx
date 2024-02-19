@@ -43,7 +43,6 @@ import { useWorkspaceModalState } from "@/stores/workspace.store";
 import { signOut } from "next-auth/react";
 import { usePathname, useSelectedLayoutSegment } from "next/navigation";
 import { WorkspaceCreateDialog } from "../workspaces/workspace-create-dialog";
-import { OrgSwitcher } from "../orgs/org-switcher";
 
 export const formatWorkspaces = (workspaces: InfiniteWorkspacesData) => {
   let data: Workspace[] = [];
@@ -168,7 +167,7 @@ export function DashboardLayout({ children }: Props) {
                   </Transition.Child>
                   {/* Sidebar component, swap this element with another sidebar if you like */}
                   <div className="flex grow flex-col gap-y-3 overflow-y-auto bg-white px-4 pb-4">
-                    <div className="ml-2 flex h-16 shrink-0 items-center">
+                    <div className="flex h-16 shrink-0 items-center">
                       <div className="">
                         <Logo />
                       </div>
@@ -279,7 +278,7 @@ export function DashboardLayout({ children }: Props) {
         <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
           {/* Sidebar component, swap this element with another sidebar if you like */}
           <div className="flex grow flex-col gap-y-2 overflow-y-auto border-r border-gray-200 bg-white px-4 pb-4">
-            <div className="ml-2.5 flex h-16 shrink-0 items-center">
+            <div className="flex h-16 shrink-0 items-center">
               <div className="">
                 <Logo />
               </div>
@@ -287,14 +286,6 @@ export function DashboardLayout({ children }: Props) {
             <nav className="flex flex-1 flex-col">
               <div role="list" className="flex flex-1 flex-col gap-y-4">
                 <div role="list" className="space-y-1.5">
-                  {/* <div>
-                    {orgs.isLoading && (
-                      <Skeleton className="h-[40px] w-[200px] rounded-lg" />
-                    )}
-                    {!orgs.isLoading && orgs.data?.data && (
-                      <OrgSwitcher orgs={orgs.data?.data} />
-                    )}
-                  </div> */}
                   {navigation.map((item) => (
                     <div key={item.name}>
                       <NavListItem item={item} />
@@ -408,14 +399,7 @@ export function DashboardLayout({ children }: Props) {
             />
 
             <div className="flex flex-1 items-center justify-between gap-x-4 self-stretch lg:gap-x-6">
-              <div className="lg:-ml-4">
-                {/* {orgs.isLoading && (
-                  <Skeleton className="h-[40px] w-[200px] rounded-lg" />
-                )}
-                {!orgs.isLoading && orgs.data?.data && (
-                  <OrgSwitcher orgs={orgs.data?.data} />
-                )} */}
-              </div>
+              <div className="lg:-ml-4"></div>
               <div className="flex items-center gap-x-4 lg:gap-x-6">
                 <button
                   type="button"
@@ -519,7 +503,7 @@ function NavListItem({ item }: NavListItemProps) {
     >
       <item.icon
         className={cn(
-          "h-5 w-5 text-gray-500 group-hover:text-gray-900",
+          "h-[18px] w-[18px] text-gray-500 group-hover:text-gray-900",
           isActive && "text-gray-900",
         )}
         aria-hidden="true"
