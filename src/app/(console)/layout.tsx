@@ -1,10 +1,10 @@
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 
-export default function DashboardPageLayout({
-  children,
-}: {
+interface Props {
   children: React.ReactNode;
-}) {
+}
+
+export default function DashboardPageLayout({ children }: Props) {
   return (
     <DashboardLayout>
       <div>{children}</div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment, useMemo, useState } from "react";
-import { Dialog, Transition } from "@headlessui/react";
+import { Transition, Dialog } from "@headlessui/react";
 import {
   IconBell,
   IconCreditCard,
@@ -10,6 +10,7 @@ import {
   IconMenu2,
   IconPlus,
   IconSettings,
+  IconSparkles,
   IconUser,
   IconX,
   type TablerIconsProps,
@@ -35,13 +36,18 @@ import { hasFeatureAccess } from "@/utils/has-feature-access";
 import { Button } from "@/components/ui/button";
 import { WorkspaceNavItem } from "@/components/workspaces/workspace-nav-item";
 import { Skeleton } from "@/components/ui/skeleton";
-import { isEmpty } from "radash";
+import { isEmpty, isEqual } from "radash";
 import { LimitReachedModal } from "@/components/ui/limit-reached-modal";
 import { type Workspace } from "@prisma/client";
 import { type InfiniteWorkspacesData } from "@/types/workspace.types";
 import { useWorkspaceModalState } from "@/stores/workspace.store";
 import { signOut } from "next-auth/react";
-import { usePathname, useSelectedLayoutSegment } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useSelectedLayoutSegment,
+  useSelectedLayoutSegments,
+} from "next/navigation";
 import { WorkspaceCreateDialog } from "../workspaces/workspace-create-dialog";
 import { OrgSwitcher } from "../orgs/org-switcher";
 import { useOrgs } from "@/queries/org.queries";
@@ -62,10 +68,16 @@ export const formatWorkspaces = (workspaces: InfiniteWorkspacesData) => {
 const loadingWorkspaces = new Array(5).fill("");
 
 const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: IconHome },
-  // { name: "Settings", href: "/settings/account", icon: IconSettings },
-  // { name: "Settings", href: "/settings/account", icon: IconSettings },
-  { name: "Settings", href: "/settings", icon: IconSettings },
+  {
+    name: "Dashboard",
+    href: (id: string) => `/${id}`,
+    icon: IconHome,
+  },
+  {
+    name: "Settings",
+    href: (id: string) => `/${id}/settings`,
+    icon: IconSettings,
+  },
 ];
 
 interface Props {
@@ -74,9 +86,12 @@ interface Props {
 
 export function DashboardLayout({ children }: Props) {
   const orgs = useOrgs();
+  const params = useParams();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [limitReachedModal, limitReachedModalHandlers] = useDialog();
   const { setWorkspaceModalState } = useWorkspaceModalState();
+
+  const orgId = params.orgId as string;
 
   const user = useAuthUser();
 
@@ -180,7 +195,7 @@ export function DashboardLayout({ children }: Props) {
                         <div role="list" className="space-y-1.5">
                           {navigation.map((item) => (
                             <div key={item.name}>
-                              <NavListItem item={item} />
+                              <NavListItem item={item} orgId={orgId} />
                             </div>
                           ))}
                         </div>
@@ -278,30 +293,30 @@ export function DashboardLayout({ children }: Props) {
         </Transition.Root>
 
         {/* Static sidebar for desktop */}
-        <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+        <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-72 lg:flex-col">
           {/* Sidebar component, swap this element with another sidebar if you like */}
           <div className="flex grow flex-col gap-y-2 overflow-y-auto border-r border-gray-200 bg-white px-4 pb-4">
-            <div className="ml-2.5 flex h-16 shrink-0 items-center">
+            <div className="flex h-16 shrink-0 items-center">
               <div className="">
                 <Logo />
               </div>
             </div>
-            <nav className="flex flex-1 flex-col">
+            <nav className="-mt-2 flex flex-1 flex-col">
               <div role="list" className="flex flex-1 flex-col gap-y-4">
                 <div role="list" className="space-y-1.5">
-                  {/* <div>
-                    {orgs.isLoading && (
-                      <Skeleton className="h-[40px] w-[200px] rounded-lg" />
-                    )}
-                    {!orgs.isLoading && orgs.data?.data && (
-                      <OrgSwitcher orgs={orgs.data?.data} />
-                    )}
-                  </div> */}
-                  {navigation.map((item) => (
-                    <div key={item.name}>
-                      <NavListItem item={item} />
-                    </div>
-                  ))}
+                  {orgs.isLoading && (
+                    <Skeleton className="h-[35px] w-full rounded-lg" />
+                  )}
+                  {!orgs.isLoading && orgs.data?.data && (
+                    <OrgSwitcher orgs={orgs.data?.data} />
+                  )}
+                  <div className="space-y-1.5 pt-2">
+                    {navigation.map((item) => (
+                      <div key={item.name}>
+                        <NavListItem item={item} orgId={orgId} />
+                      </div>
+                    ))}
+                  </div>
                 </div>
                 <Divider />
                 <div className="">
@@ -404,38 +419,39 @@ export function DashboardLayout({ children }: Props) {
             </button>
 
             {/* Separator */}
-            <div
+            {/* <div
               className="h-6 w-px bg-gray-200 lg:hidden"
               aria-hidden="true"
-            />
+            /> */}
 
             <div className="flex flex-1 items-center justify-between gap-x-4 self-stretch lg:gap-x-6">
-              <div className="lg:-ml-4">
-                {orgs.isLoading && (
-                  <Skeleton className="h-[40px] w-[200px] rounded-lg" />
-                )}
-                {!orgs.isLoading && orgs.data?.data && (
-                  <OrgSwitcher orgs={orgs.data?.data} />
-                )}
+              <div className="flex flex-shrink-0 items-center space-x-4">
+                <div className="lg:hidden">
+                  {orgs.isLoading && (
+                    <Skeleton className="h-[35px] w-[200px] rounded-lg" />
+                  )}
+                  {!orgs.isLoading && orgs.data?.data && (
+                    <OrgSwitcher orgs={orgs.data?.data} className="w-[200px]" />
+                  )}
+                </div>
               </div>
-              <div className="flex items-center gap-x-4 lg:gap-x-6">
-                <button
-                  type="button"
-                  className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500"
-                >
-                  <span className="sr-only">View notifications</span>
-                  <IconBell className="h-6 w-6" aria-hidden="true" />
-                </button>
+              <div className="flex items-center gap-x-4">
+                <Button variant="outline">Feedback</Button>
 
-                {/* Separator */}
-                <div
-                  className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200"
-                  aria-hidden="true"
-                />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="text-gray-400 hover:text-gray-500"
+                >
+                  <IconSparkles
+                    className="h-[22px] w-[22px]"
+                    aria-hidden="true"
+                  />
+                </Button>
 
                 {/* Profile dropdown */}
                 <DropdownMenu>
-                  <DropdownMenuTrigger className="-m-1.5 flex items-center p-1.5">
+                  <DropdownMenuTrigger className="flex items-center lg:-mr-4">
                     <span className="sr-only">Open user menu</span>
                     <Avatar>
                       <AvatarImage src={user?.image || ""} />
@@ -444,7 +460,7 @@ export function DashboardLayout({ children }: Props) {
                       </AvatarFallback>
                     </Avatar>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="min-w-[200px]">
+                  <DropdownMenuContent align="end" className="min-w-[250px]">
                     <DropdownMenuLabel>
                       <p className="text-xs font-normal text-gray-400">
                         Signed in as
@@ -498,22 +514,32 @@ export function DashboardLayout({ children }: Props) {
 }
 
 interface NavListItemProps {
+  orgId: string;
   item: {
     name: string;
-    href: string;
+    href: (id: string) => string;
     icon: (props: TablerIconsProps) => JSX.Element;
   };
 }
 
-function NavListItem({ item }: NavListItemProps) {
+function NavListItem({ item, orgId }: NavListItemProps) {
   const segment = useSelectedLayoutSegment();
+  const segments = useSelectedLayoutSegments();
   const pathname = usePathname();
   const isActive =
-    segment === item.name.toLowerCase() || pathname === item.href;
+    segment === item.name.toLowerCase() ||
+    pathname === item.href(orgId) ||
+    (segments.length > 1 && item.href(orgId).includes(segments[1]!));
+
+  // console.log("segments: ", segments);
+  // console.log("item.href(orgId): ", item.href(orgId));
+  // console.log("pathname: ", pathname);
+  // console.log("segments[1]: ", segments[1]);
+  // console.log("isTrue: ", item.href(orgId).includes(segments[1]!));
 
   return (
     <Link
-      href={item.href}
+      href={item.href(orgId)}
       className={cn(
         "group flex w-full items-center gap-x-3 rounded-lg px-3 py-2 text-[13px] font-medium leading-6 text-gray-900 no-underline",
         isActive ? "bg-gray-100" : "text-gray-900 hover:bg-gray-100",
@@ -521,7 +547,7 @@ function NavListItem({ item }: NavListItemProps) {
     >
       <item.icon
         className={cn(
-          "h-5 w-5 text-gray-500 group-hover:text-gray-900",
+          "h-[18px] w-[18px] text-gray-500 group-hover:text-gray-900",
           isActive && "text-gray-900",
         )}
         aria-hidden="true"

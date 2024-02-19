@@ -53,8 +53,8 @@ export const useOrgAddMutation = () => {
       return { previousQueryData };
     },
     onSuccess: async (data) => {
-      localStorage?.setItem("recent-org-slug", data.slug || "");
-      router.push(`/${data.slug}`);
+      localStorage?.setItem("recent-org-id", data.id || "");
+      router.push(`/${data.id}`);
     },
     onError: (error, _, ctx) => {
       console.log(error);
@@ -66,30 +66,90 @@ export const useOrgAddMutation = () => {
   });
 };
 
-// export const useWorkspaceUpdateMutation = (id: string) => {
-//   const apiUtils = api.useUtils();
+export const useOrgUpdateMutation = (id: string) => {
+  const apiUtils = api.useUtils();
 
-//   return api.workspace.updateById.useMutation({
-//     onMutate: async () => {
-//       await apiUtils.workspace.getById.cancel({ id });
-//       const previousQueryData = apiUtils.workspace.getById.getData({
-//         id,
-//       });
-//       return { previousQueryData };
-//     },
-//     onSuccess: () => {
-//       toast.success("Workspace updated", {
-//         description: "Your workspace has been successfully updated!",
-//       });
-//     },
-//     onError: (error, _, ctx) => {
-//       console.log(error);
-//       apiUtils.workspace.getById.setData({ id }, ctx?.previousQueryData);
-//       toast.error("Error", { description: error.message });
-//     },
-//     onSettled: async () => {
-//       await apiUtils.workspace.getById.invalidate({ id });
-//       await apiUtils.workspace.getAll.invalidate();
-//     },
-//   });
-// };
+  return api.org.updateById.useMutation({
+    onMutate: async () => {
+      await apiUtils.org.getById.cancel({ id });
+      const previousQueryData = apiUtils.org.getById.getData({
+        id,
+      });
+      return { previousQueryData };
+    },
+    onSuccess: () => {
+      toast.success("Organization updated", {
+        description: "Your organization has been successfully updated!",
+      });
+    },
+    onError: (error, _, ctx) => {
+      console.log(error);
+      apiUtils.org.getById.setData({ id }, ctx?.previousQueryData);
+      toast.error("Error", { description: error.message });
+    },
+    onSettled: async () => {
+      await apiUtils.org.getById.invalidate({ id });
+      await apiUtils.org.getAll.invalidate();
+    },
+  });
+};
+
+export const useOrgDeleteMutation = () => {
+  const apiUtils = api.useUtils();
+
+  return api.org.deleteById.useMutation({
+    onMutate: async () => {
+      await apiUtils.org.getAll.cancel();
+      const previousQueryData = apiUtils.org.getAll.getInfiniteData();
+      return { previousQueryData };
+    },
+    onError: (error, _, ctx) => {
+      console.log(error);
+      apiUtils.org.getAll.setInfiniteData({}, ctx?.previousQueryData);
+      toast.error("Error", { description: error.message });
+    },
+    onSettled: async () => {
+      await apiUtils.org.getAll.invalidate();
+    },
+  });
+};
+
+export const useCreateOrgInviteMutation = () => {
+  const apiUtils = api.useUtils();
+  const router = useRouter();
+
+  return api.org.createInvite.useMutation({
+    onSuccess: async (data, input) => {
+      router.push(`/${input.orgId}/settings/members?tab=invites`);
+    },
+    onError: (error) => {
+      console.log(error);
+      toast.error("Error", { description: error.message });
+    },
+    onSettled: async (data, _, input) => {
+      apiUtils.org.getInvites.invalidate({ id: input.orgId });
+    },
+  });
+};
+
+export const useOrgMemberDeleteMutation = (orgId: string) => {
+  const apiUtils = api.useUtils();
+
+  return api.org.deleteMember.useMutation({
+    onMutate: async () => {
+      await apiUtils.org.getMembers.cancel({ id: orgId });
+      const previousQueryData = apiUtils.org.getMembers.getData({
+        id: orgId,
+      });
+      return { previousQueryData };
+    },
+    onError: (error, _, ctx) => {
+      console.log(error);
+      apiUtils.org.getMembers.setData({ id: orgId }, ctx?.previousQueryData);
+      toast.error("Error", { description: error.message });
+    },
+    onSettled: async () => {
+      await apiUtils.org.getMembers.invalidate({ id: orgId });
+    },
+  });
+};

@@ -121,7 +121,7 @@ model OrgMember {
     userId    String   @db.ObjectId
     user      User     @relation(fields: [userId], references: [id])
 
-    @@unique([orgId])
+    @@unique([userId, orgId])
     @@map("organizationMembers")
 }
 

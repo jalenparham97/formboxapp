@@ -11,6 +11,7 @@ import { TRPCError } from "@trpc/server";
 import { randomBytes } from "crypto";
 import { hashToken } from "@/utils/hash-token";
 import { env } from "@/env";
+import { sendOrgInviteEmail } from "@/libs/mail";
 
 export const orgRouter = createTRPCRouter({
   create: protectedProcedure
@@ -141,7 +142,7 @@ export const orgRouter = createTRPCRouter({
           } else {
             throw new TRPCError({
               code: "CONFLICT",
-              message: `Organization invite pending - ${org.name}`,
+              message: `${org.name}`,
             });
           }
         }
@@ -224,11 +225,10 @@ export const orgRouter = createTRPCRouter({
         email: z.string(),
         orgId: z.string(),
         orgName: z.string(),
-        orgSlug: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { email, orgId, orgName, orgSlug } = input;
+      const { email, orgId, orgName } = input;
 
       const alreadyInTeam = await ctx.db.orgMember.findFirst({
         where: {
@@ -272,22 +272,22 @@ export const orgRouter = createTRPCRouter({
         });
 
         const params = new URLSearchParams({
-          callbackUrl: `${env.NEXTAUTH_URL}/${orgSlug}`,
+          callbackUrl: `${env.NEXTAUTH_URL}/${orgId}`,
           token,
           email,
         });
 
         const link = `${env.NEXTAUTH_URL}/api/auth/callback/email?${params}`;
 
-        // const mail = await sendWorkspaceInviteEmail(email, workspaceName, link);
+        const mail = await sendOrgInviteEmail(email, orgName, link);
 
-        // if (mail.error) {
-        //   throw new TRPCError({
-        //     code: "PARSE_ERROR",
-        //     message: mail.error.message,
-        //     cause: mail.error.name,
-        //   });
-        // }
+        if (mail.error) {
+          throw new TRPCError({
+            code: "PARSE_ERROR",
+            message: mail.error.message,
+            cause: mail.error.name,
+          });
+        }
 
         return { sent: true };
       } catch (error) {

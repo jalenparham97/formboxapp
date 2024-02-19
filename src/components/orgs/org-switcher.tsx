@@ -1,12 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  IconCheck,
-  IconChevronDown,
-  IconPlus,
-  IconSelector,
-} from "@tabler/icons-react";
+import { IconCheck, IconPlus, IconSelector } from "@tabler/icons-react";
 
 import { cn } from "@/utils/tailwind-helpers";
 import { Button, DefaultButton } from "@/components/ui/button";
@@ -43,14 +38,20 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { type OrgsOutput } from "@/types/org.types";
-import { useParams, useRouter } from "next/navigation";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { useParams, usePathname, useRouter } from "next/navigation";
+import { Avatar, AvatarFallback } from "../ui/avatar";
 import { getInitials } from "@/utils/get-initials";
 
 type Org = OrgsOutput["data"][0];
 
-function getOrg(slug: string, orgs: Org[]) {
-  return orgs.find((org) => org.slug === slug);
+function getOrg(orgId: string, orgs: Org[]) {
+  return orgs.find((org) => org.id === orgId);
+}
+
+function getUrl(orgId: string, pathname: string) {
+  const constructedRoute = pathname.split("/");
+  constructedRoute[1] = orgId;
+  return constructedRoute.join("/");
 }
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
@@ -63,15 +64,18 @@ interface OrgSwitcherProps extends PopoverTriggerProps {
 
 export function OrgSwitcher({ className, orgs }: OrgSwitcherProps) {
   const params = useParams();
+  const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const [showNewTeamDialog, setShowNewTeamDialog] = React.useState(false);
 
-  const slug = params.slug as string;
+  const orgId = params.orgId as string;
 
   const [selectedOrg, setSelectedOrg] = React.useState<Org>(
-    getOrg(slug, orgs) as Org,
+    getOrg(orgId, orgs) as Org,
   );
+
+  console.log("pathname: ", pathname);
 
   return (
     <div>
@@ -80,17 +84,17 @@ export function OrgSwitcher({ className, orgs }: OrgSwitcherProps) {
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <DefaultButton
-                variant="ghost"
+                variant="outline"
                 role="combobox"
                 aria-expanded={open}
                 aria-label="Select an organization"
                 className={cn(
-                  "h-[40px] w-[200px] justify-between text-base",
+                  "w-[250px] justify-between px-2.5 text-base shadow-none",
                   className,
                 )}
               >
                 <div className="flex items-center space-x-3">
-                  <Avatar className="h-7 w-7">
+                  <Avatar className="h-[26px] w-[26px]">
                     <AvatarFallback className="text-sm uppercase text-white">
                       {getInitials(selectedOrg?.name, 1)}
                     </AvatarFallback>
@@ -102,7 +106,7 @@ export function OrgSwitcher({ className, orgs }: OrgSwitcherProps) {
                 <IconSelector className="ml-auto h-4 w-4 shrink-0 opacity-50" />
               </DefaultButton>
             </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-0">
+            <PopoverContent className="w-[250px] p-0">
               <Command>
                 <CommandList>
                   <CommandInput placeholder="Search organization" />
@@ -113,7 +117,7 @@ export function OrgSwitcher({ className, orgs }: OrgSwitcherProps) {
                         key={org.id}
                         onSelect={() => {
                           setSelectedOrg(org);
-                          router.push(`/${org.id}`);
+                          router.push(getUrl(org.id, pathname));
                           setOpen(false);
                         }}
                         className="text-sm"

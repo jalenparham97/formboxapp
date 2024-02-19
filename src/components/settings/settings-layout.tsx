@@ -4,9 +4,10 @@ import { PageTitle } from "@/components/ui/page-title";
 
 interface Props {
   children: React.ReactNode;
+  orgId: string;
 }
 
-export function SettingsLayout({ children }: Props) {
+export function SettingsLayout({ children, orgId }: Props) {
   return (
     <MaxWidthWrapper className="py-10">
       <div>
@@ -14,9 +15,12 @@ export function SettingsLayout({ children }: Props) {
       </div>
       <div className="mt-6">
         <NavTabs className="">
-          <NavTab href="/settings" label="Account" />
-          <NavTab href="/settings/subscription" label="Subscription" />
-          <NavTab href="/settings/members" label="Members" />
+          <NavTab href={`/${orgId}/settings`} label="Account" />
+          <NavTab
+            href={`/${orgId}/settings/subscription`}
+            label="Subscription"
+          />
+          <NavTab href={`/${orgId}/settings/members`} label="Members" />
         </NavTabs>
 
         <div className="pt-6">{children}</div>

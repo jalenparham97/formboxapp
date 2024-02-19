@@ -70,7 +70,7 @@ export default function PricingSection({ products, user }: Props) {
             </SegmentedControlsList>
           </SegmentedControls>
 
-          <div className="mt-6 w-full space-y-6 lg:flex lg:justify-between lg:space-x-6 lg:space-y-0">
+          <div className="mt-6 w-full space-y-6 lg:flex lg:justify-between lg:space-x-3 lg:space-y-0">
             {products
               ?.sort(
                 (pA, pB) =>

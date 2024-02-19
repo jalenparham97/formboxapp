@@ -25,53 +25,64 @@ import { WorkspaceDashboardInviteDialog } from "../workspaces/workspace-dashboar
 import { formatWorkspaces } from "@/utils/format-workspaces";
 import { type WorkspacesOutput } from "@/types/workspace.types";
 import { Button } from "../ui/button";
+import { OrgInviteAcceptModal } from "../orgs/org-invite-accept-dialog";
+import { useOrgById } from "@/queries/org.queries";
 
 interface Props {
-  initialData: WorkspacesOutput;
+  initialData?: WorkspacesOutput;
+  orgId: string;
 }
 
-export function DashboardView({ initialData }: Props) {
+export function DashboardView({ initialData, orgId }: Props) {
   const { ref, inView } = useInView();
   const { setWorkspaceModalState } = useWorkspaceModalState();
   const [searchString, setSearchString] = useDebouncedState("", 250);
   const [formCreateModal, formCreateModalHandler] = useDialog();
   const [inviteModal, inviteModalHandler] = useDialog();
   const [limitReachedModal, limitReachedModalHandlers] = useDialog();
-
-  const workspaces = useInfiniteWorkspaces({ searchString }, initialData);
+  const [acceptModal, acceptModalHandler] = useDialog();
+  const { data: org, isLoading, error } = useOrgById(orgId);
 
   useEffect(() => {
-    if (workspaces.hasNextPage && inView) {
-      workspaces.fetchNextPage();
+    if (error?.data?.code === "CONFLICT") {
+      acceptModalHandler.open();
     }
-  }, [inView, workspaces]);
+  }, [acceptModalHandler, error]);
 
-  const data = useMemo(
-    () => formatWorkspaces(workspaces.data),
-    [workspaces.data],
-  );
+  // const workspaces = useInfiniteWorkspaces({ searchString }, initialData);
 
-  const openWorspaceCreateModal = () => {
-    const isWorkspacesLessThanOne =
-      Number(workspaces?.data?.pages[0]?.total) === 0;
+  // useEffect(() => {
+  //   if (workspaces.hasNextPage && inView) {
+  //     workspaces.fetchNextPage();
+  //   }
+  // }, [inView, workspaces]);
 
-    return setWorkspaceModalState(true);
+  // const data = useMemo(
+  //   () => formatWorkspaces(workspaces.data),
+  //   [workspaces.data],
+  // );
 
-    // if (
-    //   hasFeatureAccess(user?.stripePlan, "1 workspace") &&
-    //   isWorkspacesLessThanOne
-    // ) {
-    //   return setWorkspaceModalState(true);
-    // }
+  // const openWorspaceCreateModal = () => {
+  //   const isWorkspacesLessThanOne =
+  //     Number(workspaces?.data?.pages[0]?.total) === 0;
 
-    // if (hasFeatureAccess(user?.stripePlan, "Unlimited workspaces")) {
-    //   return setWorkspaceModalState(true);
-    // }
+  //   return setWorkspaceModalState(true);
 
-    // return limitReachedModalHandlers.open();
-  };
+  //   if (
+  //     hasFeatureAccess(user?.stripePlan, "1 workspace") &&
+  //     isWorkspacesLessThanOne
+  //   ) {
+  //     return setWorkspaceModalState(true);
+  //   }
 
-  const noSearchResults = isEmpty(data) && !isEmpty(searchString);
+  //   if (hasFeatureAccess(user?.stripePlan, "Unlimited workspaces")) {
+  //     return setWorkspaceModalState(true);
+  //   }
+
+  //   return limitReachedModalHandlers.open();
+  // };
+
+  // const noSearchResults = isEmpty(data) && !isEmpty(searchString);
 
   return (
     <MaxWidthWrapper className="py-6">
@@ -79,7 +90,7 @@ export function DashboardView({ initialData }: Props) {
         <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
           <button
             className="focus-visible:ring-dark-900 relative flex cursor-pointer items-center space-x-3 rounded-xl border border-gray-200 bg-white px-6 py-5 shadow-sm hover:border-gray-300 focus-visible:ring-2 focus-visible:ring-offset-2"
-            onClick={openWorspaceCreateModal}
+            // onClick={openWorspaceCreateModal}
           >
             <div className="flex w-full min-w-0 flex-col items-center space-y-1">
               <IconFolder />
@@ -87,7 +98,7 @@ export function DashboardView({ initialData }: Props) {
             </div>
           </button>
           <button
-            disabled={isEmpty(data)}
+            // disabled={isEmpty(data)}
             className="focus-visible:ring-dark-900 relative flex cursor-pointer items-center space-x-3 rounded-xl border border-gray-200 bg-white px-6 py-5 shadow-sm hover:border-gray-300 focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-default disabled:opacity-50 disabled:hover:border-gray-300"
             onClick={formCreateModalHandler.open}
           >
@@ -97,7 +108,7 @@ export function DashboardView({ initialData }: Props) {
             </div>
           </button>
           <button
-            disabled={isEmpty(data)}
+            // disabled={isEmpty(data)}
             className="focus-visible:ring-dark-900 relative flex cursor-pointer items-center space-x-3 rounded-xl border border-gray-200 bg-white px-6 py-5 shadow-sm hover:border-gray-300 focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-default disabled:opacity-50 disabled:hover:border-gray-300"
             onClick={inviteModalHandler.open}
           >
@@ -120,7 +131,7 @@ export function DashboardView({ initialData }: Props) {
         </div>
       </div>
 
-      {!isEmpty(data) && (
+      {/* {!isEmpty(data) && (
         <>
           <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
             {data?.map((workspace) => (
@@ -154,9 +165,9 @@ export function DashboardView({ initialData }: Props) {
             ))}
           </div>
         </>
-      )}
+      )} */}
 
-      {isEmpty(data) && !noSearchResults && (
+      {/* {isEmpty(data) && !noSearchResults && (
         <div className="mt-20">
           <EmptyState
             title="No workspaces yet"
@@ -172,9 +183,9 @@ export function DashboardView({ initialData }: Props) {
             }
           />
         </div>
-      )}
+      )} */}
 
-      {noSearchResults && (
+      {/* {noSearchResults && (
         <div className="mt-24">
           <EmptyState
             title="No search results"
@@ -182,15 +193,22 @@ export function DashboardView({ initialData }: Props) {
             icon={<IconFolder size={40} />}
           />
         </div>
-      )}
+      )} */}
 
-      <div ref={ref} className="text-center">
+      {/* <div ref={ref} className="text-center">
         {workspaces.isFetchingNextPage && <Loader className="mt-5" />}
-      </div>
+      </div> */}
 
       <WorkspaceDashboardInviteDialog
         open={inviteModal}
         onClose={inviteModalHandler.close}
+      />
+
+      <OrgInviteAcceptModal
+        open={acceptModal}
+        onClose={acceptModalHandler.close}
+        orgName={error?.message}
+        orgId={orgId}
       />
     </MaxWidthWrapper>
   );

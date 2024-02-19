@@ -1,3 +1,4 @@
+import { OrgInviteEmailTemplate } from "@/emails/org-invite-email-template";
 import { SignInEmailTemplate } from "@/emails/signin-email";
 import { WorkspaceInviteEmailTemplate } from "@/emails/workspace-invite-email-template";
 import { env } from "@/env";
@@ -28,5 +29,18 @@ export async function sendWorkspaceInviteEmail(
     react: (
       <WorkspaceInviteEmailTemplate workspaceName={workspaceName} link={link} />
     ),
+  });
+}
+
+export async function sendOrgInviteEmail(
+  email: string,
+  orgName: string,
+  link: string,
+) {
+  return await resend.emails.send({
+    subject: "You've been invited to join an organization on Formbox",
+    from: emailFrom,
+    to: email,
+    react: <OrgInviteEmailTemplate orgName={orgName} link={link} />,
   });
 }
