@@ -4,6 +4,7 @@ import { Fragment, useMemo, useState } from "react";
 import { Transition, Dialog } from "@headlessui/react";
 import {
   IconBell,
+  IconChevronDown,
   IconCreditCard,
   IconHome,
   IconLogout,
@@ -11,7 +12,10 @@ import {
   IconPlus,
   IconSettings,
   IconSparkles,
+  IconSwitchHorizontal,
   IconUser,
+  IconUserCircle,
+  IconUsers,
   IconX,
   type TablerIconsProps,
 } from "@tabler/icons-react";
@@ -50,7 +54,7 @@ import {
 } from "next/navigation";
 import { WorkspaceCreateDialog } from "../workspaces/workspace-create-dialog";
 import { OrgSwitcher } from "../orgs/org-switcher";
-import { useOrgs } from "@/queries/org.queries";
+import { useOrgById, useOrgs } from "@/queries/org.queries";
 
 export const formatWorkspaces = (workspaces: InfiniteWorkspacesData) => {
   let data: Workspace[] = [];
@@ -70,12 +74,12 @@ const loadingWorkspaces = new Array(5).fill("");
 const navigation = [
   {
     name: "Dashboard",
-    href: (id: string) => `/${id}`,
+    href: (id: string) => `/dashboard/${id}`,
     icon: IconHome,
   },
   {
     name: "Settings",
-    href: (id: string) => `/${id}/settings`,
+    href: (id: string) => `/dashboard/${id}/settings`,
     icon: IconSettings,
   },
 ];
@@ -94,6 +98,8 @@ export function DashboardLayout({ children }: Props) {
   const orgId = params.orgId as string;
 
   const user = useAuthUser();
+
+  const org = useOrgById(orgId);
 
   const {
     isLoading,
@@ -297,20 +303,20 @@ export function DashboardLayout({ children }: Props) {
           {/* Sidebar component, swap this element with another sidebar if you like */}
           <div className="flex grow flex-col gap-y-2 overflow-y-auto border-r border-gray-200 bg-white px-4 pb-4">
             <div className="flex h-16 shrink-0 items-center">
-              <div className="">
-                <Logo />
+              <div className="flex items-center space-x-4">
+                <Logo icon />
+                {org.isLoading && (
+                  <Skeleton className="h-[35px] w-[200px] rounded-lg" />
+                )}
+                {!org.isLoading && (
+                  <h2 className="text-xl font-semibold">{org.data?.name}</h2>
+                )}
               </div>
             </div>
             <nav className="-mt-2 flex flex-1 flex-col">
               <div role="list" className="flex flex-1 flex-col gap-y-4">
                 <div role="list" className="space-y-1.5">
-                  {orgs.isLoading && (
-                    <Skeleton className="h-[35px] w-full rounded-lg" />
-                  )}
-                  {!orgs.isLoading && orgs.data?.data && (
-                    <OrgSwitcher orgs={orgs.data?.data} />
-                  )}
-                  <div className="space-y-1.5 pt-2">
+                  <div className="space-y-1.5">
                     {navigation.map((item) => (
                       <div key={item.name}>
                         <NavListItem item={item} orgId={orgId} />
@@ -338,7 +344,7 @@ export function DashboardLayout({ children }: Props) {
                         {loadingWorkspaces.map((_, index) => (
                           <Skeleton
                             key={index}
-                            className="h-[30px] rounded-lg"
+                            className="h-[35px] rounded-lg"
                           />
                         ))}
                       </>
@@ -385,7 +391,7 @@ export function DashboardLayout({ children }: Props) {
                               className="w-full"
                               onClick={openWorkspaceModal}
                             >
-                              <div className="flex w-full items-center rounded-md border-none py-[5px] text-left transition-colors hover:bg-gray-100">
+                              <div className="flex w-full items-center rounded-lg border-none py-[8px] text-left transition-colors hover:bg-gray-100">
                                 <div className="flex items-center space-x-2 px-3">
                                   <p className="text-dark-300">
                                     <IconPlus size={18} />
@@ -468,13 +474,33 @@ export function DashboardLayout({ children }: Props) {
                       <p>{user?.email}</p>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <Link href="/settings">
+                    <Link href={`/organizations`}>
                       <DropdownMenuItem>
-                        <IconUser className="mr-2 h-4 w-4" />
-                        <span>Profile</span>
+                        <IconSwitchHorizontal className="mr-2 h-4 w-4" />
+                        <span>Switch organization</span>
                       </DropdownMenuItem>
                     </Link>
-                    <Link href="/settings/subscription">
+                    <Link href={`/settings`}>
+                      <DropdownMenuItem>
+                        <IconUserCircle className="mr-2 h-4 w-4" />
+                        <span>Manage account</span>
+                      </DropdownMenuItem>
+                    </Link>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuLabel>{org?.data?.name}</DropdownMenuLabel>
+                    <Link href={`/dashboard/${orgId}/settings`}>
+                      <DropdownMenuItem>
+                        <IconSettings className="mr-2 h-4 w-4" />
+                        <span>Settings</span>
+                      </DropdownMenuItem>
+                    </Link>
+                    <Link href={`/dashboard/${orgId}/settings/members`}>
+                      <DropdownMenuItem>
+                        <IconUsers className="mr-2 h-4 w-4" />
+                        <span>Members</span>
+                      </DropdownMenuItem>
+                    </Link>
+                    <Link href={`/dashboard/${orgId}/settings/subscription`}>
                       <DropdownMenuItem>
                         <IconCreditCard className="mr-2 h-4 w-4" />
                         <span>Subscription</span>

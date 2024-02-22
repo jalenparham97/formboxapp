@@ -23,7 +23,7 @@ export function Logo({
     return (
       <div>
         <Image
-          className={cn("", icon ? "w-7" : "w-32", className)}
+          className={cn("", icon ? "w-6" : "w-32", className)}
           src={icon ? logoIcon : logoFull}
           alt=""
           width={80}
@@ -37,7 +37,7 @@ export function Logo({
     <div>
       <Link href={href}>
         <Image
-          className={cn("", icon ? "w-7" : "w-32", className)}
+          className={cn("", icon ? "w-6" : "w-32", className)}
           src={icon ? logoIcon : logoFull}
           alt=""
           width={80}

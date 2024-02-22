@@ -58,11 +58,6 @@ export const orgRouter = createTRPCRouter({
               stripePlanNickname: true,
             },
           },
-          // _count: {
-          //   select: {
-          //     forms: true,
-          //   },
-          // },
           _count: {
             select: {
               members: true,
@@ -272,7 +267,7 @@ export const orgRouter = createTRPCRouter({
         });
 
         const params = new URLSearchParams({
-          callbackUrl: `${env.NEXTAUTH_URL}/${orgId}`,
+          callbackUrl: `${env.NEXTAUTH_URL}/dashboard/${orgId}`,
           token,
           email,
         });

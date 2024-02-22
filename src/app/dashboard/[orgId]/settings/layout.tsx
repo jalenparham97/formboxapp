@@ -5,13 +5,17 @@ export const metadata = {
   description: "Manage account and website settings.",
 };
 
+interface Props {
+  children: React.ReactNode;
+  params: { orgId: string };
+}
+
 export default function SettingsPageLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+  params: { orgId },
+}: Props) {
   return (
-    <SettingsLayout>
+    <SettingsLayout orgId={orgId}>
       <div>{children}</div>
     </SettingsLayout>
   );

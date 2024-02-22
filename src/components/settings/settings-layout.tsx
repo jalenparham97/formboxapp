@@ -4,7 +4,7 @@ import { PageTitle } from "@/components/ui/page-title";
 
 interface Props {
   children: React.ReactNode;
-  orgId: string;
+  orgId?: string;
 }
 
 export function SettingsLayout({ children, orgId }: Props) {
@@ -15,12 +15,15 @@ export function SettingsLayout({ children, orgId }: Props) {
       </div>
       <div className="mt-6">
         <NavTabs className="">
-          <NavTab href={`/${orgId}/settings`} label="Account" />
+          <NavTab href={`/dashboard/${orgId}/settings`} label="General" />
           <NavTab
-            href={`/${orgId}/settings/subscription`}
+            href={`/dashboard/${orgId}/settings/subscription`}
             label="Subscription"
           />
-          <NavTab href={`/${orgId}/settings/members`} label="Members" />
+          <NavTab
+            href={`/dashboard/${orgId}/settings/members`}
+            label="Members"
+          />
         </NavTabs>
 
         <div className="pt-6">{children}</div>

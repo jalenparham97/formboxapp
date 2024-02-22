@@ -3,11 +3,17 @@ import PricingSection from "@/components/subscription/pricing-section";
 import { Button } from "@/components/ui/button";
 import { api } from "@/trpc/server";
 
-export default async function SettingsSubscriptionPage() {
-  const user = await api.user.getUser.query();
+interface Props {
+  params: { orgId: string };
+}
+
+export default async function SettingsSubscriptionPage({
+  params: { orgId },
+}: Props) {
+  const org = await api.org.getById.query({ id: orgId });
   const products = await api.payment.getProducts.query();
 
-  const currentPlan = user?.stripePlanNickname?.split("-")[0] ?? "Free";
+  const currentPlan = org?.stripePlanNickname?.split("-")[0] ?? "Free";
 
   return (
     <div className="space-y-10">
@@ -24,12 +30,12 @@ export default async function SettingsSubscriptionPage() {
           <span className="font-semibold capitalize">{currentPlan}</span>
         </p>
         <div className="mt-5">
-          <ManageSubscriptionButton user={user} />
+          <ManageSubscriptionButton orgId={orgId} />
         </div>
       </div>
 
       <div className="lg:max-w-7xl">
-        <PricingSection products={products} user={user} />
+        <PricingSection products={products} org={org} />
       </div>
 
       <div>

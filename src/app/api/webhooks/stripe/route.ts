@@ -33,12 +33,12 @@ export async function POST(req: Request) {
         const subscriptionId = session.subscription as string;
 
         const subscription = await stripe.subscriptions.update(subscriptionId, {
-          metadata: { userId: session.metadata?.userId as string },
+          metadata: { orgId: session.metadata?.orgId as string },
         });
 
-        await db.user.update({
+        await db.org.update({
           where: {
-            id: session?.metadata?.userId,
+            id: session?.metadata?.orgId,
           },
           data: {
             stripeSubscriptionId: subscription.id,

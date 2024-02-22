@@ -98,7 +98,7 @@ export function WorkspacesView({ initialData }: Props) {
                   <div className="flex items-center space-x-1 text-gray-600">
                     <IconFileText size={16} /> <span>0 forms</span>
                   </div>
-                  <div className="flex items-center space-x-1 text-gray-500">
+                  <div className="flex items-center space-x-1 text-gray-600">
                     <IconUsers size={16} /> <span>0 members</span>
                   </div>
                 </div>

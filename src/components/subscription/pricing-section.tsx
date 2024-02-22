@@ -6,7 +6,7 @@ import {
   SegmentedControlsTrigger,
 } from "@/components/ui/segmented-controls";
 import type { Products } from "@/types/payment.types";
-import type { UserWithAccounts } from "@/types/user.types";
+import { type OrgOutput } from "@/types/org.types";
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,26 +17,28 @@ type PriceFrequency = "month" | "year";
 
 interface Props {
   products: Products;
-  user: UserWithAccounts;
+  org: OrgOutput;
 }
 
-export default function PricingSection({ products, user }: Props) {
+export default function PricingSection({ products, org }: Props) {
   const [frequency, setFrequency] = useState<PriceFrequency>("month");
 
   const sessionMutation = api.payment.getCheckoutSession.useMutation();
   const portalMutation = api.payment.getBillingPortalSession.useMutation();
 
   const handleUpgrade = async (priceId: string = "") => {
-    if (user?.stripeSubscriptionStatus === "active") {
+    const returnUrl = `${window.location.origin}/dashboard/${org.id}/settings/subscription`;
+    if (org?.stripeSubscriptionStatus === "active") {
       const { url } = await portalMutation.mutateAsync({
-        stripeCustomerId: user?.stripeCustomerId || "",
-        returnUrl: window.location.origin,
+        stripeCustomerId: org?.stripeCustomerId || "",
+        returnUrl,
       });
       window?.location.assign(url);
     } else {
       const { url } = await sessionMutation.mutateAsync({
         priceId,
-        returnUrl: window.location.origin,
+        returnUrl,
+        orgId: org.id,
       });
       url && window?.location.assign(url);
     }
@@ -100,7 +102,7 @@ export default function PricingSection({ products, user }: Props) {
                       </span>
                     </p>
 
-                    {!user?.stripeSubscriptionId && (
+                    {!org?.stripeSubscriptionId && (
                       <div className="mt-6">
                         <Button
                           onClick={() =>
@@ -109,7 +111,7 @@ export default function PricingSection({ products, user }: Props) {
                             )
                           }
                           disabled={
-                            !user?.stripeSubscriptionId &&
+                            !org?.stripeSubscriptionId &&
                             product.name.toLowerCase() === "free"
                           }
                         >

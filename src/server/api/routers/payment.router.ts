@@ -13,7 +13,7 @@ export const paymentRouter = createTRPCRouter({
     .mutation(async ({ input }) => {
       return await stripe.billingPortal.sessions.create({
         customer: input.stripeCustomerId,
-        return_url: `${input.returnUrl}/dashboard/settings/subscription`,
+        return_url: `${input.returnUrl}`,
       });
     }),
   getCheckoutSession: protectedProcedure
@@ -22,12 +22,12 @@ export const paymentRouter = createTRPCRouter({
         priceId: z.string().optional(),
         stripeCustomerId: z.string().optional(),
         returnUrl: z.string().url(),
+        orgId: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       return await stripe.checkout.sessions.create({
         customer: input.stripeCustomerId,
-        customer_email: ctx.user.email as string,
         mode: "subscription",
         line_items: [
           {
@@ -35,9 +35,9 @@ export const paymentRouter = createTRPCRouter({
             quantity: 1,
           },
         ],
-        success_url: `${input.returnUrl}/dashboard/settings/subscription`,
-        cancel_url: `${input.returnUrl}/dashboard/settings/subscription`,
-        metadata: { userId: ctx.user.id },
+        success_url: `${input.returnUrl}`,
+        cancel_url: `${input.returnUrl}`,
+        metadata: { orgId: input.orgId },
       });
     }),
   getProducts: protectedProcedure.query(async () => {

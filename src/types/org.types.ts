@@ -18,4 +18,4 @@ export type OrgFindInput = RouterInputs["org"]["getAll"];
 
 export type OrgMember = RouterOutputs["org"]["getMembers"][0];
 
-export type InfiniteOrgsData = InfiniteData<OrgOutput> | undefined;
+export type InfiniteOrgsData = InfiniteData<OrgsOutput> | undefined;

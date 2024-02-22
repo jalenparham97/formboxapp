@@ -1,21 +1,23 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useOrgById } from "@/queries/org.queries";
 import { api } from "@/trpc/react";
-import type { UserWithAccounts } from "@/types/user.types";
 import { IconExternalLink } from "@tabler/icons-react";
 
 interface Props {
-  user: UserWithAccounts;
+  orgId: string;
 }
 
-export default function ManageSubscriptionButton({ user }: Props) {
+export default function ManageSubscriptionButton({ orgId }: Props) {
+  const { data: org } = useOrgById(orgId);
   const portalMutation = api.payment.getBillingPortalSession.useMutation();
 
   const handleGetBillingPortal = async () => {
+    const returnUrl = `${window.location.origin}/dashboard/${orgId}/settings/subscription`;
     const { url } = await portalMutation.mutateAsync({
-      stripeCustomerId: user?.stripeCustomerId || "",
-      returnUrl: window.location.origin,
+      stripeCustomerId: org?.stripeCustomerId || "",
+      returnUrl,
     });
     window?.location.assign(url);
   };
@@ -26,7 +28,7 @@ export default function ManageSubscriptionButton({ user }: Props) {
         onClick={handleGetBillingPortal}
         leftIcon={<IconExternalLink size={16} />}
         loading={portalMutation.isLoading}
-        disabled={!user?.stripeSubscriptionId}
+        disabled={!org?.stripeSubscriptionId}
       >
         Billing portal
       </Button>

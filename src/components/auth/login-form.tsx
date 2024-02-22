@@ -69,7 +69,7 @@ export function LoginForm() {
           <h2 className="text-xl font-bold leading-9 text-gray-900">
             Sign in to your account
           </h2>
-          <p className="mt-3 text-sm text-gray-600">
+          <p className="mt-3 text-gray-600">
             New to {COMPANY_NAME}? Just sign in. We&apos;ll create your account
             and email you a login link.
           </p>

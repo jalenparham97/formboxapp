@@ -18,7 +18,7 @@ export function WorkspaceNavItem({ text, href }: Props) {
       <Link href={href} className="no-underline">
         <div
           className={cn(
-            "flex w-full items-center rounded-lg border-none py-[5px] text-left text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900",
+            "flex w-full items-center rounded-lg border-none py-[8px] text-left text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900",
             isActive && "bg-gray-100 text-gray-900 hover:bg-gray-100",
           )}
         >

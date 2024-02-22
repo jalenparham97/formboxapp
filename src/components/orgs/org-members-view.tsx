@@ -27,6 +27,7 @@ import {
 import type { OrgMember } from "@/types/org.types";
 import { Roles } from "@/types/utility.types";
 import { OrgInviteDialog } from "./org-invite-dialog";
+import { useAuthUser } from "@/queries/user.queries";
 
 const loadingMembersAndInvites = new Array(3).fill("");
 
@@ -78,7 +79,7 @@ export function OrgMembersView({ orgId }: Props) {
   };
 
   function updateTabState(tab: "members" | "invites") {
-    return router.push(`/${orgId}/settings/members?tab=${tab}`);
+    return router.push(`/dashboard/${orgId}/settings/members?tab=${tab}`);
   }
   return (
     <div>
@@ -87,11 +88,6 @@ export function OrgMembersView({ orgId }: Props) {
           <div>
             <div className="flex items-center space-x-4">
               <h3 className="text-xl font-semibold">Organization members</h3>
-              {org?.name && (
-                <Badge variant={"gray"} className="capitalize">
-                  {org?.name}
-                </Badge>
-              )}
             </div>
             <p className="mt-2 text-gray-600">
               Teammates or collaborators that have access to this organization
@@ -246,12 +242,17 @@ interface MemberProps {
 }
 
 function MemberCard({ member, index }: MemberProps) {
+  const user = useAuthUser();
+  const router = useRouter();
   const [deleteModal, deleteModalHandler] = useDialog();
 
   const deleteMutation = useOrgMemberDeleteMutation(member?.org?.id);
 
   const handleDelete = async () => {
     await deleteMutation.mutateAsync({ memberId: member.id });
+    if (member.user.id === user?.id) {
+      router.push("/organizations");
+    }
   };
 
   const isMemberRole = member.role === Roles.MEMBER;
