@@ -54,7 +54,7 @@ export const useOrgAddMutation = () => {
     },
     onSuccess: async (data) => {
       localStorage?.setItem("recent-org-id", data.id || "");
-      router.push(`/${data.id}`);
+      router.push(`/dashboard/${data.id}/forms`);
     },
     onError: (error, _, ctx) => {
       console.log(error);
@@ -78,9 +78,7 @@ export const useOrgUpdateMutation = (id: string) => {
       return { previousQueryData };
     },
     onSuccess: () => {
-      toast.success("Organization updated", {
-        description: "Your organization has been successfully updated!",
-      });
+      toast.success("Organization settings updated");
     },
     onError: (error, _, ctx) => {
       console.log(error);

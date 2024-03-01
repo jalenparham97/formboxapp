@@ -114,7 +114,7 @@ export function RichTextEditor({
       )}
       <div
         className={cn(
-          "focus:ring-primary w-full rounded-lg shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset",
+          "w-full rounded-lg shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-primary",
           error && "ring-red-500 focus:!ring-red-500",
         )}
       >
@@ -287,7 +287,7 @@ export function RichTextEditor({
                 size="icon"
                 variant="ghost"
                 className={cn(
-                  "mr-1 h-[30px] w-[30px] hover:bg-gray-200/80 data-[state=open]:bg-gray-200/80",
+                  "mr-1 h-[30px] w-[30px] data-[state=open]:bg-gray-200/80 hover:bg-gray-200/80",
                   isLinkActive && "bg-gray-200/80",
                 )}
                 type="button"

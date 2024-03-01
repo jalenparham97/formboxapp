@@ -3,6 +3,7 @@
 import {
   IconLogout,
   IconMenu2,
+  IconSparkles,
   IconUserCircle,
   IconX,
 } from "@tabler/icons-react";
@@ -21,6 +22,8 @@ import { getInitials } from "@/utils/get-initials";
 import { useAuthUser } from "@/queries/user.queries";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
+import { Button } from "@/components/ui/button";
+import { NavButton } from "@/components/ui/nav-button";
 
 interface Props {
   children: React.ReactNode;
@@ -42,14 +45,33 @@ export default function ManageLayout({ children }: Props) {
         >
           {({ open }) => (
             <>
-              <div className="mx-auto max-w-7xl px-4">
+              <div className="mx-auto px-4">
                 <div className="flex h-16 justify-between">
-                  <div className="flex">
+                  <div className="flex items-center space-x-12">
                     <div className="flex flex-shrink-0 items-center">
-                      <Logo />
+                      <Logo icon />
+                    </div>
+                    <div className="space-x-2">
+                      <NavButton href={"/organizations"}>
+                        Organizations
+                      </NavButton>
+                      <NavButton href={"/settings"}>Settings</NavButton>
                     </div>
                   </div>
-                  <div className="hidden sm:ml-6 sm:flex sm:items-center">
+                  <div className="hidden gap-x-4 sm:flex sm:items-center">
+                    <Button variant="outline">Feedback</Button>
+
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="text-gray-400 hover:text-gray-500"
+                    >
+                      <IconSparkles
+                        className="h-[22px] w-[22px]"
+                        aria-hidden="true"
+                      />
+                    </Button>
+
                     {/* Profile dropdown */}
                     <DropdownMenu>
                       <DropdownMenuTrigger className="flex items-center">

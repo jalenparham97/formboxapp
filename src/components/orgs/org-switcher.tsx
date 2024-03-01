@@ -51,7 +51,8 @@ function getOrg(orgId: string, orgs: Org[]) {
 function getUrl(orgId: string, pathname: string) {
   const constructedRoute = pathname.split("/");
   constructedRoute[1] = orgId;
-  return constructedRoute.join("/");
+  // return constructedRoute.join("/");
+  return `/dashboard/${orgId}/forms`;
 }
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
@@ -71,11 +72,11 @@ export function OrgSwitcher({ className, orgs }: OrgSwitcherProps) {
 
   const orgId = params.orgId as string;
 
-  const [selectedOrg, setSelectedOrg] = React.useState<Org>(
-    getOrg(orgId, orgs) as Org,
-  );
+  const [selectedOrg, setSelectedOrg] = React.useState<Org>();
 
-  console.log("pathname: ", pathname);
+  React.useEffect(() => {
+    setSelectedOrg(getOrg(orgId, orgs) as Org);
+  }, [orgId, orgs]);
 
   return (
     <div>
@@ -84,12 +85,12 @@ export function OrgSwitcher({ className, orgs }: OrgSwitcherProps) {
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <DefaultButton
-                variant="outline"
+                variant="ghost"
                 role="combobox"
                 aria-expanded={open}
                 aria-label="Select an organization"
                 className={cn(
-                  "w-[250px] justify-between px-2.5 text-base shadow-none",
+                  "w-[200px] justify-between px-2.5 text-base shadow-none",
                   className,
                 )}
               >
@@ -99,14 +100,14 @@ export function OrgSwitcher({ className, orgs }: OrgSwitcherProps) {
                       {getInitials(selectedOrg?.name, 1)}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-sm font-semibold">
+                  <span className="truncate text-sm font-medium">
                     {selectedOrg?.name}
                   </span>
                 </div>
                 <IconSelector className="ml-auto h-4 w-4 shrink-0 opacity-50" />
               </DefaultButton>
             </PopoverTrigger>
-            <PopoverContent className="w-[250px] p-0">
+            <PopoverContent className="w-[200px] p-0">
               <Command>
                 <CommandList>
                   <CommandInput placeholder="Search organization" />

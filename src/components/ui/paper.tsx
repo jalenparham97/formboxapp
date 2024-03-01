@@ -10,8 +10,8 @@ export function Paper({ children, className }: Props) {
   return (
     <div
       className={cn(
-        "h-full rounded-lg border border-gray-200 shadow",
-        className
+        "h-full rounded-xl border border-gray-300 shadow-sm",
+        className,
       )}
     >
       {children}

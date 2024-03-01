@@ -18,6 +18,9 @@ import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { getInitials } from "@/utils/get-initials";
 import { ImageUploader } from "../ui/image-uploader";
+import { IconArrowLeft } from "@tabler/icons-react";
+import Link from "next/link";
+import { MaxWidthWrapper } from "../ui/max-width-wrapper";
 
 export function SettingsView() {
   const [logoUploaderOpen, logoUploaderHandler] = useDialog();
@@ -63,14 +66,23 @@ export function SettingsView() {
   };
 
   return (
-    <div className="py-10">
-      <header>
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4">
+    <MaxWidthWrapper className="py-10">
+      <header className="mx-auto">
+        <Link className="sm:hidden" href="/organizations">
+          <Button
+            variant="ghost"
+            size="sm"
+            leftIcon={<IconArrowLeft size={16} />}
+          >
+            Organizations
+          </Button>
+        </Link>
+        <div className="mt-4 flex items-center justify-between sm:mt-0">
           <PageTitle>Settings</PageTitle>
         </div>
       </header>
 
-      <div className="mx-auto mt-6 flex max-w-7xl items-center justify-between px-4">
+      <div className="flexitems-center mt-6 justify-between">
         <div className="w-full space-y-8">
           <Card className="w-full">
             <div className="p-6">
@@ -167,6 +179,6 @@ export function SettingsView() {
           showUnsplash={false}
         />
       </div>
-    </div>
+    </MaxWidthWrapper>
   );
 }

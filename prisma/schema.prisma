@@ -45,11 +45,11 @@ model Session {
 }
 
 model User {
-    id                       String            @id @default(auto()) @map("_id") @db.ObjectId
+    id                       String      @id @default(auto()) @map("_id") @db.ObjectId
     name                     String?
     firstName                String?
     lastName                 String?
-    email                    String?           @unique
+    email                    String?     @unique
     password                 String?
     emailVerified            DateTime?
     image                    String?
@@ -60,13 +60,12 @@ model User {
     stripePriceId            String?
     stripeSubscriptionStatus String?
     stripePlanNickname       String?
-    stripeCancelAtPeriodEnd  Boolean?          @default(false)
+    stripeCancelAtPeriodEnd  Boolean?    @default(false)
     stripeCurrentPeriodEnd   DateTime?
     orgs                     Org[]
     orgMembers               OrgMember[]
-    workspaceMembers         WorkspaceMember[]
-    createdAt                DateTime          @default(now())
-    updatedAt                DateTime          @updatedAt
+    createdAt                DateTime    @default(now())
+    updatedAt                DateTime    @updatedAt
 
     @@map("users")
 }
@@ -91,7 +90,6 @@ model Org {
     user                     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
     invites                  OrgInvite[]
     members                  OrgMember[]
-    workspaces               Workspace[]
     stripeCustomerId         String?
     stripeSubscriptionId     String?
     stripePriceId            String?
@@ -101,6 +99,7 @@ model Org {
     stripeCurrentPeriodEnd   DateTime?
     createdAt                DateTime    @default(now())
     updatedAt                DateTime    @updatedAt
+    forms                    Form[]
 
     @@map("organizations")
 }
@@ -131,44 +130,79 @@ model OrgMember {
     @@map("organizationMembers")
 }
 
-model Workspace {
-    id         String            @id @default(auto()) @map("_id") @db.ObjectId
-    name       String?
-    createdAt  DateTime          @default(now())
-    updatedAt  DateTime          @updatedAt
-    invites    WorkspaceInvite[]
-    members    WorkspaceMember[]
-    org        Org               @relation(fields: [orgId], references: [id], onDelete: Cascade)
-    orgId      String            @db.ObjectId
-    orgOwnerId String            @db.ObjectId
-    isPrivate  Boolean           @default(false)
+model Form {
+    id                               String               @id @default(auto()) @map("_id") @db.ObjectId
+    name                             String
+    userId                           String?              @db.ObjectId
+    org                              Org?                 @relation(fields: [orgId], references: [id])
+    orgId                            String?              @db.ObjectId
+    pageMode                         FormPageMode         @default(compact)
+    headerImage                      FileObject?
+    logo                             FileObject?
+    removeFormboxBranding            Boolean              @default(false)
+    sendEmailNotifications           Boolean              @default(true)
+    saveAnswers                      Boolean              @default(false)
+    sendRespondantEmailNotifications Boolean              @default(false)
+    respondantEmailFromName          String               @default("")
+    respondantEmailSubject           String               @default("")
+    respondantEmailMessageHTML       String               @default("")
+    showCustomClosedMessage          Boolean              @default(false)
+    submitButtonText                 String               @default("Submit")
+    closeMessageDescription          String               @default("")
+    closeMessageTitle                String               @default("")
+    limitResponses                   Boolean              @default(false)
+    isClosed                         Boolean              @default(false)
+    maxResponses                     Int?
+    emailsToNotify                   String[]
+    useCustomRedirect                Boolean              @default(false)
+    webhookEnabled                   Boolean              @default(false)
+    webhookUrl                       String               @default("")
+    headerTitle                      String               @default("")
+    headerDescription                String               @default("")
+    backgroundColor                  String               @default("#ffffff")
+    textColor                        String               @default("#000000")
+    buttonBackgroundColor            String               @default("#030712")
+    buttonTextColor                  String               @default("#ffffff")
+    accentColor                      String               @default("#030712")
+    buttonBorderStyle                FormInputBorderStyle @default(rounded)
+    inputBorderStyle                 FormInputBorderStyle @default(rounded)
+    fields                           FormField[]
+    // submissions                      Submission[]
+    createdAt                        DateTime             @default(now())
+    updatedAt                        DateTime             @updatedAt
 
-    @@unique([orgOwnerId, orgId])
-    @@map("workspaces")
+    @@map("forms")
 }
 
-model WorkspaceInvite {
-    id          String    @id @default(auto()) @map("_id") @db.ObjectId
-    email       String
-    expires     DateTime
-    workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-    workspaceId String    @db.ObjectId
-    createdAt   DateTime  @default(now())
-
-    @@unique([email, workspaceId])
-    @@map("workspaceInvites")
+enum FormPageMode {
+    compact
+    full
 }
 
-model WorkspaceMember {
-    id          String    @id @default(auto()) @map("_id") @db.ObjectId
-    role        String    @default("member")
-    createdAt   DateTime  @default(now())
-    updatedAt   DateTime  @updatedAt
-    workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-    workspaceId String    @db.ObjectId
-    userId      String    @db.ObjectId
-    user        User      @relation(fields: [userId], references: [id])
+enum FormInputBorderStyle {
+    full
+    rounded
+    flat
+}
 
-    @@unique([userId, workspaceId])
-    @@map("workspaceMembers")
+type FormField {
+    id              String
+    label           String
+    options         FormOption[]
+    required        Boolean
+    subtype         String
+    type            String
+    description     String       @default("")
+    showDescription Boolean      @default(false)
+}
+
+type FormOption {
+    id    String
+    value String
+}
+
+type FileObject {
+    key  String @default("")
+    url  String @default("")
+    name String @default("")
 }

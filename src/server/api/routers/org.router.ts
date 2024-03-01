@@ -61,6 +61,7 @@ export const orgRouter = createTRPCRouter({
           _count: {
             select: {
               members: true,
+              forms: true,
             },
           },
         },
@@ -74,7 +75,7 @@ export const orgRouter = createTRPCRouter({
         orderBy: { createdAt: "desc" },
       });
 
-      const total = await ctx.db.workspace.count({
+      const total = await ctx.db.org.count({
         where: {
           members: {
             some: {

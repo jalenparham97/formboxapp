@@ -1,4 +1,4 @@
-import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout-v2";
 
 interface Props {
   children: React.ReactNode;

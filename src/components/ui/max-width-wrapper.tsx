@@ -8,8 +8,6 @@ export function MaxWidthWrapper({
   children: React.ReactNode;
 }) {
   return (
-    <div className={cn("mx-auto max-w-7xl px-4 sm:px-8 lg:px-10", className)}>
-      {children}
-    </div>
+    <div className={cn("mx-auto max-w-6xl px-4", className)}>{children}</div>
   );
 }

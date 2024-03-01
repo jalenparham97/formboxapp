@@ -29,7 +29,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       errorMessage,
       ...props
     },
-    ref
+    ref,
   ) => {
     return (
       <div>
@@ -38,7 +38,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             htmlFor={id}
             className={cn(
               "block text-sm font-medium leading-6",
-              classNames?.label
+              classNames?.label,
             )}
             style={styles?.label}
           >
@@ -51,9 +51,9 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         <div className={cn(label && "mt-[4px]")}>
           <textarea
             className={cn(
-              "block w-full rounded-lg border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6",
+              "block w-full rounded-lg border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary disabled:opacity-60 sm:text-sm sm:leading-6",
               error && "ring-red-500 focus:!ring-red-500",
-              className
+              className,
             )}
             ref={ref}
             {...props}
@@ -63,7 +63,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         </div>
       </div>
     );
-  }
+  },
 );
 Textarea.displayName = "Textarea";
 

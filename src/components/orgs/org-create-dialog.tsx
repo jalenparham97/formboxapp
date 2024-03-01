@@ -56,8 +56,8 @@ export function OrgCreateDialog({ open, onClose }: Props) {
         </DialogHeader>
 
         <DialogDescription>
-          Group workspaces per team, project, or department, and control member
-          access to the workspaces.
+          Group forms per team, project, or client, and control member access to
+          the forms.
         </DialogDescription>
 
         <form onSubmit={handleSubmit(onSubmit)}>

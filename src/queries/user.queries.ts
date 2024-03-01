@@ -27,10 +27,7 @@ export const useUserUpdateMutation = (
       return { previousQueryData };
     },
     onSuccess: () => {
-      options.showToast &&
-        toast.success("Account updated", {
-          description: "Your account has been successfully updated!",
-        });
+      options.showToast && toast.success("Account updated");
     },
     onError: (error, _, ctx) => {
       console.log(error);

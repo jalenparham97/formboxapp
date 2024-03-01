@@ -1,19 +1,16 @@
 "use client";
 
 import { useDialog } from "@/hooks/use-dialog";
-import { useInfiniteWorkspaces } from "@/queries/workspace.queries";
-import { useWorkspaceModalState } from "@/stores/workspace.store";
 import {
+  IconClipboardText,
   IconFileDescription,
-  IconFolder,
+  IconInbox,
   IconPlus,
-  IconUsers,
 } from "@tabler/icons-react";
 import { isEmpty } from "radash";
 import { useEffect, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
 import { MaxWidthWrapper } from "../ui/max-width-wrapper";
-import { WorkspaceCardActionMenu } from "../workspaces/workspace-card-actions-menu";
 import Link from "next/link";
 import { Card } from "../ui/card";
 import { Loader } from "../ui/loader";
@@ -21,12 +18,31 @@ import { EmptyState } from "../ui/empty-state";
 import { PageTitle } from "../ui/page-title";
 import { SearchInput } from "../ui/search-input";
 import { useDebouncedState } from "@/hooks/use-debounced-state";
-import { WorkspaceDashboardInviteDialog } from "../workspaces/workspace-dashboard-invite-dialog";
-import { formatWorkspaces } from "@/utils/format-workspaces";
 import { type WorkspacesOutput } from "@/types/workspace.types";
 import { Button } from "../ui/button";
 import { OrgInviteAcceptModal } from "../orgs/org-invite-accept-dialog";
 import { useOrgById } from "@/queries/org.queries";
+import { Badge } from "../ui/badge";
+import { FormCreateDialog } from "../forms/form-create-dialog";
+import { useInfiniteForms } from "@/queries/form.queries";
+import { type FormOutput, type InfiniteFormsData } from "@/types/form.types";
+import { Skeleton } from "../ui/skeleton";
+import { FormCardActionsMenu } from "../forms/form-card-actions-menu";
+
+const loadingItems = new Array(3).fill("");
+
+export const formatForms = (forms: InfiniteFormsData) => {
+  let data: FormOutput[] = [];
+  if (forms) {
+    for (const page of forms.pages) {
+      data = [...data, ...page.data];
+    }
+    return data.map((workspace) => ({
+      ...workspace,
+    }));
+  }
+  return data;
+};
 
 interface Props {
   initialData?: WorkspacesOutput;
@@ -35,179 +51,142 @@ interface Props {
 
 export function DashboardView({ initialData, orgId }: Props) {
   const { ref, inView } = useInView();
-  const { setWorkspaceModalState } = useWorkspaceModalState();
   const [searchString, setSearchString] = useDebouncedState("", 250);
-  const [formCreateModal, formCreateModalHandler] = useDialog();
-  const [inviteModal, inviteModalHandler] = useDialog();
+  const [formCreateDialog, formCreateDialogHandler] = useDialog();
   const [limitReachedModal, limitReachedModalHandlers] = useDialog();
   const [acceptModal, acceptModalHandler] = useDialog();
-  const { data: org, isLoading, error } = useOrgById(orgId);
+  const org = useOrgById(orgId);
 
   useEffect(() => {
-    if (error?.data?.code === "CONFLICT") {
+    if (org?.error?.data?.code === "CONFLICT") {
       acceptModalHandler.open();
     }
-  }, [acceptModalHandler, error]);
+  }, [acceptModalHandler, org?.error]);
 
-  // const workspaces = useInfiniteWorkspaces({ searchString }, initialData);
+  const forms = useInfiniteForms({ orgId, searchString });
 
-  // useEffect(() => {
-  //   if (workspaces.hasNextPage && inView) {
-  //     workspaces.fetchNextPage();
-  //   }
-  // }, [inView, workspaces]);
+  useEffect(() => {
+    if (forms.hasNextPage && inView) {
+      forms.fetchNextPage();
+    }
+  }, [inView, forms]);
 
-  // const data = useMemo(
-  //   () => formatWorkspaces(workspaces.data),
-  //   [workspaces.data],
-  // );
+  const data = useMemo(() => formatForms(forms.data), [forms.data]);
 
-  // const openWorspaceCreateModal = () => {
-  //   const isWorkspacesLessThanOne =
-  //     Number(workspaces?.data?.pages[0]?.total) === 0;
-
-  //   return setWorkspaceModalState(true);
-
-  //   if (
-  //     hasFeatureAccess(user?.stripePlan, "1 workspace") &&
-  //     isWorkspacesLessThanOne
-  //   ) {
-  //     return setWorkspaceModalState(true);
-  //   }
-
-  //   if (hasFeatureAccess(user?.stripePlan, "Unlimited workspaces")) {
-  //     return setWorkspaceModalState(true);
-  //   }
-
-  //   return limitReachedModalHandlers.open();
-  // };
-
-  // const noSearchResults = isEmpty(data) && !isEmpty(searchString);
+  const noSearchResults = isEmpty(data) && !isEmpty(searchString);
 
   return (
-    <MaxWidthWrapper className="py-6">
-      <div>
-        <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <button
-            className="focus-visible:ring-dark-900 relative flex cursor-pointer items-center space-x-3 rounded-xl border border-gray-200 bg-white px-6 py-5 shadow-sm hover:border-gray-300 focus-visible:ring-2 focus-visible:ring-offset-2"
-            // onClick={openWorspaceCreateModal}
-          >
-            <div className="flex w-full min-w-0 flex-col items-center space-y-1">
-              <IconFolder />
-              <p className="text-sm font-semibold">Create a new workspace</p>
-            </div>
-          </button>
-          <button
-            // disabled={isEmpty(data)}
-            className="focus-visible:ring-dark-900 relative flex cursor-pointer items-center space-x-3 rounded-xl border border-gray-200 bg-white px-6 py-5 shadow-sm hover:border-gray-300 focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-default disabled:opacity-50 disabled:hover:border-gray-300"
-            onClick={formCreateModalHandler.open}
-          >
-            <div className="flex w-full min-w-0 flex-col items-center space-y-1">
-              <IconFileDescription />
-              <p className="text-sm font-semibold">Create a new form</p>
-            </div>
-          </button>
-          <button
-            // disabled={isEmpty(data)}
-            className="focus-visible:ring-dark-900 relative flex cursor-pointer items-center space-x-3 rounded-xl border border-gray-200 bg-white px-6 py-5 shadow-sm hover:border-gray-300 focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-default disabled:opacity-50 disabled:hover:border-gray-300"
-            onClick={inviteModalHandler.open}
-          >
-            <div className="flex w-full min-w-0 flex-col items-center space-y-1">
-              <IconUsers />
-              <p className="text-sm font-semibold">Invite a team member</p>
-            </div>
-          </button>
+    <MaxWidthWrapper className="py-10">
+      <div className="w-full">
+        <div className="flex items-center justify-between">
+          <PageTitle>Forms</PageTitle>
+          <div>
+            <Button
+              leftIcon={<IconPlus size={16} />}
+              onClick={formCreateDialogHandler.open}
+            >
+              Create form
+            </Button>
+          </div>
         </div>
-      </div>
-
-      <div className="mt-10">
-        <PageTitle>Workspaces</PageTitle>
-        <div className="mt-6 flex items-center space-x-3">
+        <div className="mt-6">
           <SearchInput
-            placeholder="Search workspaces"
+            placeholder="Search forms"
             defaultValue={searchString}
             onChange={(event) => setSearchString(event.currentTarget.value)}
+            className="w-full"
           />
         </div>
       </div>
 
-      {/* {!isEmpty(data) && (
-        <>
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-            {data?.map((workspace) => (
-              <Card
-                key={workspace.id}
-                className="border border-gray-200 p-7 shadow-sm hover:border-gray-300"
-              >
-                <div className="flex items-center justify-between">
-                  <Link
-                    href={`/workspaces/${workspace.id}`}
-                    className="text-dark-900 no-underline"
-                  >
-                    <h3 className="text-xl font-semibold">{workspace.name}</h3>
-                  </Link>
-                  <WorkspaceCardActionMenu workspace={workspace} />
-                </div>
-
-                <div className="mt-5 flex items-center space-x-3">
-                  <div className="flex items-center space-x-1 text-gray-600">
-                    <IconFileDescription size={16} /> <span>0 forms</span>
-                  </div>
-                  <div className="flex items-center space-x-1 text-gray-500">
-                    <IconUsers size={16} />{" "}
-                    <span>
-                      {workspace._count.members} member
-                      {workspace._count.members > 1 ? "s" : ""}
-                    </span>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </>
-      )} */}
-
-      {/* {isEmpty(data) && !noSearchResults && (
-        <div className="mt-20">
-          <EmptyState
-            title="No workspaces yet"
-            subtitle="Get started by creating a new workspace."
-            icon={<IconFolder size={40} />}
-            actionButton={
-              <Button
-                leftIcon={<IconPlus size={16} />}
-                onClick={openWorspaceCreateModal}
-              >
-                Create workspace
-              </Button>
-            }
-          />
+      {forms?.isLoading && (
+        <div className="mt-6 space-y-4">
+          {loadingItems.map((_, index) => (
+            <Skeleton key={index} className="h-[78px] w-full rounded-lg" />
+          ))}
         </div>
-      )} */}
+      )}
 
-      {/* {noSearchResults && (
-        <div className="mt-24">
+      {!forms.isLoading && (
+        <>
+          <div className="mt-6 space-y-4">
+            {!isEmpty(data) && (
+              <>
+                {data?.map((form) => (
+                  <div key={form?.id}>
+                    <Card className="border border-gray-200 p-5 shadow-sm hover:border-gray-300">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Link href={`/dashboard/${orgId}/forms/${form?.id}`}>
+                            <p className="text-lg font-medium">{form?.name}</p>
+                          </Link>
+                        </div>
+                        <div className="flex items-center space-x-4">
+                          <div className="flex items-center space-x-6">
+                            <div className="flex items-center space-x-1 text-gray-600">
+                              <IconInbox size={18} /> <span>{0}</span>
+                            </div>
+                            {!form?.isClosed && (
+                              <Badge variant="green">Active</Badge>
+                            )}
+                            {form?.isClosed && (
+                              <Badge variant="red">Closed</Badge>
+                            )}
+                          </div>
+                          <FormCardActionsMenu form={form as FormOutput} />
+                        </div>
+                      </div>
+                    </Card>
+                  </div>
+                ))}
+              </>
+            )}
+          </div>
+
+          {isEmpty(data) && !noSearchResults && (
+            <div className="mt-6 rounded-xl border border-gray-300 p-28">
+              <EmptyState
+                title="No forms yet"
+                subtitle="Get started by creating a new form."
+                icon={<IconFileDescription size={40} />}
+                actionButton={
+                  <Button
+                    leftIcon={<IconPlus size={16} />}
+                    onClick={formCreateDialogHandler.open}
+                  >
+                    Create form
+                  </Button>
+                }
+              />
+            </div>
+          )}
+        </>
+      )}
+
+      {!forms?.isLoading && noSearchResults && (
+        <div className="mt-6 rounded-xl border border-gray-300 p-28">
           <EmptyState
             title="No search results"
             subtitle="Please check the spelling or filter criteria"
-            icon={<IconFolder size={40} />}
+            icon={<IconClipboardText size={40} />}
           />
         </div>
-      )} */}
+      )}
 
-      {/* <div ref={ref} className="text-center">
-        {workspaces.isFetchingNextPage && <Loader className="mt-5" />}
-      </div> */}
+      <div ref={ref} className="text-center">
+        {forms.isFetchingNextPage && <Loader className="mt-5" />}
+      </div>
 
-      <WorkspaceDashboardInviteDialog
-        open={inviteModal}
-        onClose={inviteModalHandler.close}
+      <FormCreateDialog
+        open={formCreateDialog}
+        onClose={formCreateDialogHandler.close}
+        orgId={orgId}
       />
 
       <OrgInviteAcceptModal
         open={acceptModal}
         onClose={acceptModalHandler.close}
-        orgName={error?.message}
+        orgName={org?.error?.message}
         orgId={orgId}
       />
     </MaxWidthWrapper>
