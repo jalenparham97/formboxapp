@@ -18,7 +18,6 @@ import { EmptyState } from "../ui/empty-state";
 import { PageTitle } from "../ui/page-title";
 import { SearchInput } from "../ui/search-input";
 import { useDebouncedState } from "@/hooks/use-debounced-state";
-import { type WorkspacesOutput } from "@/types/workspace.types";
 import { Button } from "../ui/button";
 import { OrgInviteAcceptModal } from "../orgs/org-invite-accept-dialog";
 import { useOrgById } from "@/queries/org.queries";
@@ -45,11 +44,10 @@ export const formatForms = (forms: InfiniteFormsData) => {
 };
 
 interface Props {
-  initialData?: WorkspacesOutput;
   orgId: string;
 }
 
-export function DashboardView({ initialData, orgId }: Props) {
+export function DashboardView({ orgId }: Props) {
   const { ref, inView } = useInView();
   const [searchString, setSearchString] = useDebouncedState("", 250);
   const [formCreateDialog, formCreateDialogHandler] = useDialog();
