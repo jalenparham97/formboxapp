@@ -1,9 +1,9 @@
 import { FormSubmissionsView } from "@/components/forms/form-submissions-view";
 
 interface Props {
-  params: { formId: string; orgId: string };
+  params: { formId: string };
 }
 
-export default function Page({ params: { orgId, formId } }: Props) {
-  return <FormSubmissionsView orgId={orgId} formId={formId} />;
+export default function Page({ params: { formId } }: Props) {
+  return <FormSubmissionsView formId={formId} />;
 }
