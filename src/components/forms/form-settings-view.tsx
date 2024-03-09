@@ -21,6 +21,10 @@ import { FormDeleteDialog } from "./form-delete-dialog";
 import { FormRespondantEmailTemplateDialog } from "./form-respondant-email-template-dialog";
 import { Textarea } from "../ui/textarea";
 
+function getEmailsToNotify(emails: string[]) {
+  return emails.map((email) => email.trim()).join(", ");
+}
+
 interface Props {
   orgId: string;
   formId: string;
@@ -57,9 +61,10 @@ export function FormSettingsView({ orgId, formId }: Props) {
       if (!form) return;
       const updateData = pick(form, [
         "name",
-        "sendEmailNotifications",
         "isClosed",
+        "sendEmailNotifications",
         "sendRespondantEmailNotifications",
+        "emailsToNotify",
         "closeMessageTitle",
         "closeMessageDescription",
         "limitResponses",
@@ -72,6 +77,12 @@ export function FormSettingsView({ orgId, formId }: Props) {
         "respondantEmailFromName",
         "respondantEmailSubject",
         "respondantEmailMessageHTML",
+        "useCustomRedirect",
+        "customSuccessUrl",
+        "googleRecaptchaEnabled",
+        "googleRecaptchaSecretKey",
+        "allowedDomains",
+        "customHoneypot",
       ]);
       await updateMutation.mutateAsync({ id: formId, ...updateData, ...data });
     } catch (error) {
@@ -219,6 +230,83 @@ export function FormSettingsView({ orgId, formId }: Props) {
     );
   };
 
+  const handleUseCustomRedirectChange = () => {
+    setForm(
+      (prevForm) =>
+        prevForm && {
+          ...prevForm,
+          useCustomRedirect: !prevForm.useCustomRedirect,
+        },
+    );
+  };
+
+  const handleSuccessUrlChange = (e: React.FormEvent<HTMLInputElement>) => {
+    const inputValue = e.currentTarget.value;
+    setForm(
+      (prevForm) =>
+        prevForm && {
+          ...prevForm,
+          customSuccessUrl: inputValue,
+        },
+    );
+  };
+
+  const handleAllowedDomainsChange = (e: React.FormEvent<HTMLInputElement>) => {
+    const inputValue = e.currentTarget.value;
+    setForm(
+      (prevForm) =>
+        prevForm && {
+          ...prevForm,
+          allowedDomains: inputValue,
+        },
+    );
+  };
+
+  const handleGoogleRecaptchaChange = () => {
+    setForm(
+      (prevForm) =>
+        prevForm && {
+          ...prevForm,
+          googleRecaptchaEnabled: !prevForm.googleRecaptchaEnabled,
+        },
+    );
+  };
+
+  const handleGoogleRecaptchaKeyChange = (
+    e: React.FormEvent<HTMLInputElement>,
+  ) => {
+    const inputValue = e.currentTarget.value;
+    setForm(
+      (prevForm) =>
+        prevForm && {
+          ...prevForm,
+          googleRecaptchaSecretKey: inputValue,
+        },
+    );
+  };
+
+  const handleCustomHoneypotChange = (e: React.FormEvent<HTMLInputElement>) => {
+    const inputValue = e.currentTarget.value;
+    setForm(
+      (prevForm) =>
+        prevForm && {
+          ...prevForm,
+          customHoneypot: inputValue,
+        },
+    );
+  };
+
+  const handleEmailsToNotifyChange = (e: React.FormEvent<HTMLInputElement>) => {
+    const inputValue = e.currentTarget.value;
+    setForm(
+      (prevForm) =>
+        prevForm && {
+          ...prevForm,
+          emailsToNotify: inputValue.split(",").map((email) => email.trim()),
+        },
+    );
+  };
+
   return (
     <div className="pb-[100px]">
       <div className="flex items-center justify-between">
@@ -228,7 +316,7 @@ export function FormSettingsView({ orgId, formId }: Props) {
         </div>
       </div>
 
-      <div className="mt-8">
+      <div className="mt-6">
         <Paper>
           <div className="px-4 py-5 sm:px-6">
             <div className="flex items-center justify-between">
@@ -309,7 +397,7 @@ export function FormSettingsView({ orgId, formId }: Props) {
               <div className="space-y-1">
                 <h4 className="font-semibold">Self email notifications</h4>
                 <p className="text-sm text-gray-600">
-                  Get an email for new form submissions.
+                  Get an email for you and your team on new submissions.
                 </p>
               </div>
               <div>
@@ -319,6 +407,19 @@ export function FormSettingsView({ orgId, formId }: Props) {
                 />
               </div>
             </div>
+
+            {form?.sendEmailNotifications && (
+              <div className="mt-4">
+                <Input
+                  label="Emails to notify"
+                  description='Separate emails with a comma ","'
+                  placeholder="e.g. email@example.com, email2@example.com"
+                  defaultValue={getEmailsToNotify(form?.emailsToNotify || [""])}
+                  onChange={handleEmailsToNotifyChange}
+                  // disabled={!hasAccess("Webhooks")}
+                />
+              </div>
+            )}
           </div>
 
           <Divider />
@@ -327,10 +428,10 @@ export function FormSettingsView({ orgId, formId }: Props) {
             <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <h4 className="font-semibold">
-                  Respondant email notifications
+                  Respondent email notifications
                 </h4>
                 <p className="text-sm text-gray-600">
-                  Send a customized email to respondants after a successful form
+                  Send a customized email to respondents after a successful form
                   submission.
                 </p>
               </div>
@@ -467,6 +568,163 @@ export function FormSettingsView({ orgId, formId }: Props) {
                   onChange={handleCloseMessageDescriptionChange}
                 />
               </div>
+            )}
+          </div>
+        </Paper>
+      </div>
+
+      <div className="mt-5">
+        <Paper>
+          <div className="px-4 py-5 sm:px-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <h3 className="text-xl font-semibold">Custom redirect</h3>
+                {/* {!hasAccess("Webhooks") && <ProBadge />} */}
+              </div>
+            </div>
+          </div>
+          <Divider />
+          <div className="px-4 py-5 sm:px-6">
+            <div className="flex items-center justify-between space-x-16">
+              <div className="space-y-1">
+                <h4 className="font-semibold">Use custom redirect</h4>
+                <p className="text-sm text-gray-600">
+                  Users will be redirected to your custom success or fail
+                  URL&apos;s.
+                </p>
+              </div>
+              <div>
+                <Switch
+                  checked={form?.useCustomRedirect}
+                  onCheckedChange={handleUseCustomRedirectChange}
+                  // disabled={!hasAccess("Webhooks")}
+                />
+              </div>
+            </div>
+
+            {form?.useCustomRedirect && (
+              <>
+                <Divider className="mt-4" />
+
+                <div className="mt-4">
+                  <div className="space-y-1">
+                    <h4 className="font-semibold">Custom redirect URL</h4>
+                    <p className="text-sm text-gray-600">
+                      Users will be redirected to your custom URL on successful
+                      submission.
+                    </p>
+                  </div>
+                  <div>
+                    <Input
+                      className="mt-4"
+                      placeholder="https://example.com/thanks"
+                      defaultValue={form?.customSuccessUrl}
+                      onChange={handleSuccessUrlChange}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </Paper>
+      </div>
+
+      <div className="mt-5">
+        <Paper>
+          <div className="px-4 py-5 sm:px-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <h3 className="text-xl font-semibold">Security</h3>
+                {/* {!hasAccess("Webhooks") && <ProBadge />} */}
+              </div>
+            </div>
+          </div>
+
+          <Divider />
+          <div className="px-4 py-5 sm:px-6">
+            <div className="flex items-center justify-between space-x-16">
+              <div className="space-y-1">
+                <h4 className="font-semibold">Allowed domains</h4>
+                <p className="text-sm text-gray-600">
+                  Restrict form submissions to specific domains.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-4 space-y-3">
+              <Input
+                placeholder="e.g. example.com, blog.example.com"
+                defaultValue={form?.allowedDomains}
+                onChange={handleAllowedDomainsChange}
+                // disabled={!hasAccess("Domain restrictions")}
+              />
+            </div>
+          </div>
+
+          <Divider />
+          <div className="px-4 py-5 sm:px-6">
+            <div className="flex items-center justify-between space-x-16">
+              <div className="space-y-1">
+                <h4 className="font-semibold">Custom honeypot</h4>
+                <p className="text-sm text-gray-600">
+                  The hidden honeypot field (&quot;_gotcha&quot;) can be used in
+                  conjunction with our supported spam filtering methods, and
+                  using a custom name makes it work even better.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-4 space-y-3">
+              <Input
+                placeholder="_botvortex"
+                defaultValue={form?.customHoneypot}
+                onChange={handleCustomHoneypotChange}
+                // disabled={!hasAccess("Domain restrictions")}
+              />
+            </div>
+          </div>
+
+          <Divider />
+          <div className="px-4 py-5 sm:px-6">
+            <div className="flex items-center justify-between space-x-16">
+              <div className="space-y-1">
+                <h4 className="font-semibold">Google reCAPTCHA enabled</h4>
+                <p className="text-sm text-gray-600">
+                  Protect your form with google reCAPTCHA.
+                </p>
+              </div>
+              <div>
+                <Switch
+                  checked={form?.googleRecaptchaEnabled}
+                  onCheckedChange={handleGoogleRecaptchaChange}
+                  // disabled={!hasAccess("Webhooks")}
+                />
+              </div>
+            </div>
+
+            {form?.googleRecaptchaEnabled && (
+              <>
+                <Divider className="mt-4" />
+
+                <div className="mt-4">
+                  <div className="space-y-1">
+                    <h4 className="font-semibold">
+                      Google reCAPTCHA secret key
+                    </h4>
+                    <p className="text-sm text-gray-600">
+                      Paste your Google reCAPTCHA Secret Key to protect your
+                      form.
+                    </p>
+                  </div>
+                  <div>
+                    <Input
+                      className="mt-4"
+                      defaultValue={form?.googleRecaptchaSecretKey}
+                      onChange={handleGoogleRecaptchaKeyChange}
+                    />
+                  </div>
+                </div>
+              </>
             )}
           </div>
         </Paper>

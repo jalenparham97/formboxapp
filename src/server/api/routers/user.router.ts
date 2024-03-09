@@ -5,6 +5,22 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { omit } from "radash";
 
+export const UserSchema = z.object({
+  id: z.string(),
+  name: z.string().optional(),
+  email: z.string(),
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+  image: z.string().url().optional(),
+  accounts: z.array(
+    z.object({
+      id: z.string(),
+      provider: z.string(),
+      providerAccountId: z.string(),
+    }),
+  ),
+});
+
 export const userRouter = createTRPCRouter({
   getUser: protectedProcedure.query(async ({ ctx }) => {
     const user = await ctx.db.user.findUnique({

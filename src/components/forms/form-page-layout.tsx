@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { IconArrowLeft, IconPencil } from "@tabler/icons-react";
+import { IconArrowLeft } from "@tabler/icons-react";
 import { NavTabs, NavTab } from "@/components/ui/nav-tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -24,7 +24,7 @@ export function FormPageLayout({ children, formId, orgId }: Props) {
         <div className="flex items-center space-x-3">
           {form.isLoading && (
             <div className="flex w-full items-center justify-between">
-              <Skeleton className="h-[35px] w-64 rounded-lg shadow-sm" />
+              <Skeleton className="h-[32px] w-64 rounded-lg shadow-sm" />
             </div>
           )}
           {!form.isLoading && (
@@ -49,11 +49,11 @@ export function FormPageLayout({ children, formId, orgId }: Props) {
           )}
         </div>
 
-        <div>
+        {/* <div>
           <Link href={`/editor/${formId}/create`}>
             <Button leftIcon={<IconPencil size={16} />}>Edit</Button>
           </Link>
-        </div>
+        </div> */}
       </div>
 
       <div className="mt-6">
@@ -67,8 +67,8 @@ export function FormPageLayout({ children, formId, orgId }: Props) {
             label="Submissions"
           />
           <NavTab
-            href={`/dashboard/${orgId}/forms/${formId}/share`}
-            label="Share"
+            href={`/dashboard/${orgId}/forms/${formId}/setup`}
+            label="Setup"
           />
           <NavTab
             href={`/dashboard/${orgId}/forms/${formId}/integrations`}

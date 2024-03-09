@@ -24,7 +24,7 @@ type Props = {
   link?: string;
 };
 
-export function OrgInviteEmailTemplate({
+export default function OrgInviteEmailTemplate({
   orgName = "Vercel",
   link = "http://localhost:3000/api/auth/callback/email?callbackUrl=http%3A%2F%2Flocalhost%3A3000&token=3862779cce10af2342b11eb5d5957ceb6797645a41c329c5200f31c2b741a32d&email=jalenparham97%40gmail.com",
 }: Props) {

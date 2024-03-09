@@ -2,7 +2,11 @@
  * An array of routes that are accessible to the public
  * These routes do not require authentication
  */
-export const publicRoutes = ["/api/webhooks/stripe"];
+export const publicRoutes = [
+  "/api/webhooks/stripe",
+  "/api/jobs/send-submission-email-notifications",
+  "/api/jobs/send-respondent-email-notifications",
+];
 
 /**
  * An array of routes that are used for authentication

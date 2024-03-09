@@ -52,7 +52,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           </label>
         )}
         {description && (
-          <p className="block text-sm text-gray-500">{description}</p>
+          <p className="mb-1 block text-sm text-gray-600">{description}</p>
         )}
         <div className={cn("relative", label && "mt-[5px]")}>
           {icon && (

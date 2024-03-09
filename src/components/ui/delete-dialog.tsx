@@ -48,13 +48,23 @@ export function DeleteDialog({
         </DialogDescription>
 
         <DialogFooter className="mt-3">
-          <Button variant="outline" onClick={closeModal} className="w-full">
+          <Button
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              closeModal();
+            }}
+            className="w-full"
+          >
             Cancel
           </Button>
           <Button
             variant="destructive"
             className="w-full"
-            onClick={handleDelete}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDelete();
+            }}
             loading={loading}
           >
             Delete

@@ -56,7 +56,7 @@ export const useFormAddMutation = () => {
       return { previousQueryData };
     },
     onSuccess: async (data) => {
-      router.push(`/editor/${data.id}/create`);
+      router.push(`/dashboard/${data.orgId}/forms/${data.id}/setup`);
     },
     onError: (error, input, ctx) => {
       console.log(error);

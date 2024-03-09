@@ -29,7 +29,7 @@ import { type FormOutput, type InfiniteFormsData } from "@/types/form.types";
 import { Skeleton } from "../ui/skeleton";
 import { FormCardActionsMenu } from "../forms/form-card-actions-menu";
 
-const loadingItems = new Array(3).fill("");
+const loadingItems = new Array(5).fill("");
 
 export const formatForms = (forms: InfiniteFormsData) => {
   let data: FormOutput[] = [];
@@ -37,8 +37,8 @@ export const formatForms = (forms: InfiniteFormsData) => {
     for (const page of forms.pages) {
       data = [...data, ...page.data];
     }
-    return data.map((workspace) => ({
-      ...workspace,
+    return data.map((form) => ({
+      ...form,
     }));
   }
   return data;
@@ -100,16 +100,16 @@ export function DashboardView({ initialData, orgId }: Props) {
       </div>
 
       {forms?.isLoading && (
-        <div className="mt-6 space-y-4">
+        <div className="mt-4 space-y-4">
           {loadingItems.map((_, index) => (
-            <Skeleton key={index} className="h-[78px] w-full rounded-lg" />
+            <Skeleton key={index} className="h-[78px] w-full rounded-xl" />
           ))}
         </div>
       )}
 
       {!forms.isLoading && (
         <>
-          <div className="mt-6 space-y-4">
+          <div className="mt-4 space-y-4">
             {!isEmpty(data) && (
               <>
                 {data?.map((form) => (
@@ -124,7 +124,8 @@ export function DashboardView({ initialData, orgId }: Props) {
                         <div className="flex items-center space-x-4">
                           <div className="flex items-center space-x-6">
                             <div className="flex items-center space-x-1 text-gray-600">
-                              <IconInbox size={18} /> <span>{0}</span>
+                              <IconInbox size={18} />{" "}
+                              <span>{form?._count?.submissions}</span>
                             </div>
                             {!form?.isClosed && (
                               <Badge variant="green">Active</Badge>
@@ -144,7 +145,7 @@ export function DashboardView({ initialData, orgId }: Props) {
           </div>
 
           {isEmpty(data) && !noSearchResults && (
-            <div className="mt-6 rounded-xl border border-gray-300 p-28">
+            <div className="mt-4 rounded-xl border border-gray-300 p-28">
               <EmptyState
                 title="No forms yet"
                 subtitle="Get started by creating a new form."
@@ -164,7 +165,7 @@ export function DashboardView({ initialData, orgId }: Props) {
       )}
 
       {!forms?.isLoading && noSearchResults && (
-        <div className="mt-6 rounded-xl border border-gray-300 p-28">
+        <div className="mt-4 rounded-xl border border-gray-300 p-28">
           <EmptyState
             title="No search results"
             subtitle="Please check the spelling or filter criteria"

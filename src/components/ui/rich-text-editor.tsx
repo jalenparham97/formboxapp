@@ -55,7 +55,7 @@ export function RichTextEditor({
     editorProps: {
       attributes: {
         class:
-          "prose max-w-none prose-sm sm:prose-sm prose-p:my-0.5 prose-headings:my-1.5 prose-li:marker:text-gray-900 prose-ul:marker:text-gray-900 border-t border-gray-300 px-3 pb-3 pt-1.5 text-gray-900 placeholder:text-gray-400 min-h-[150px] max-h-[250px] overflow-y-scroll focus:outline-none",
+          "prose max-w-none prose-sm sm:prose-sm prose-li:marker:text-gray-900 prose-ul:marker:text-gray-900 border-t border-gray-300 px-3 pb-3 pt-1.5 text-gray-900 placeholder:text-gray-400 min-h-[150px] max-h-[250px] overflow-y-scroll focus:outline-none",
       },
     },
     extensions: [

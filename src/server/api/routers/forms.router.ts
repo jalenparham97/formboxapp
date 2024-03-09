@@ -12,7 +12,9 @@ export const formsRouter = createTRPCRouter({
   create: protectedProcedure
     .input(formCreateSchema)
     .mutation(async ({ ctx, input }) => {
-      return ctx.db.form.create({ data: input });
+      return ctx.db.form.create({
+        data: { ...input, emailsToNotify: [ctx.user.email as string] },
+      });
     }),
   getAll: protectedProcedure
     .input(z.object({ orgId: z.string(), ...filterSchema }))
@@ -30,9 +32,9 @@ export const formsRouter = createTRPCRouter({
           },
         },
         include: {
-          // _count: {
-          //   select: { submissions: true },
-          // },
+          _count: {
+            select: { submissions: true },
+          },
         },
         ...(input.cursor && {
           cursor: {
@@ -59,6 +61,11 @@ export const formsRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       return await ctx.db.form.findUnique({
         where: { id: input.id },
+        include: {
+          _count: {
+            select: { submissions: true },
+          },
+        },
       });
     }),
   // getAllExportSubmissions: protectedProcedure
@@ -85,79 +92,6 @@ export const formsRouter = createTRPCRouter({
   //         isSpam: submission.isSpam,
   //       };
   //     });
-  //   }),
-  // getSubmissions: protectedProcedure
-  //   .input(
-  //     z.object({
-  //       formId: z.string(),
-  //       ...filterSchema,
-  //     }),
-  //   )
-  //   .query(async ({ ctx, input }) => {
-  //     const formQuery = { formId: input.formId, isSpam: false };
-
-  //     const take = input?.take ?? FILTER_TAKE;
-
-  //     const query: db.FormEndpointSubmissionFindManyArgs = {
-  //       where: {
-  //         ...formQuery,
-  //       },
-  //       take,
-  //       orderBy: { id: "desc" },
-  //     };
-
-  //     if (input?.cursor) {
-  //       query.cursor = {
-  //         id: input?.cursor,
-  //       };
-  //       query.skip = 1;
-  //     }
-
-  //     const data = await ctx.db.formEndpointSubmission.findMany(query);
-
-  //     const total = await ctx.db.formEndpointSubmission.count({
-  //       where: formQuery,
-  //     });
-
-  //     const result = { total, data, cursor: "" };
-
-  //     if (data.length < take) return result;
-
-  //     return { ...result, cursor: data.at(-1)?.id };
-  //   }),
-  // getSpamSubmissions: protectedProcedure
-  //   .input(z.object({ formId: z.string(), ...filterSchema }))
-  //   .query(async ({ ctx, input }) => {
-  //     const formQuery = { formId: input.formId, isSpam: true };
-
-  //     const take = input?.take ?? FILTER_TAKE;
-
-  //     const query: db.FormEndpointSubmissionFindManyArgs = {
-  //       where: {
-  //         ...formQuery,
-  //       },
-  //       take,
-  //       orderBy: { id: "desc" },
-  //     };
-
-  //     if (input?.cursor) {
-  //       query.cursor = {
-  //         id: input?.cursor,
-  //       };
-  //       query.skip = 1;
-  //     }
-
-  //     const data = await ctx.db.formEndpointSubmission.findMany(query);
-
-  //     const total = await ctx.db.formEndpointSubmission.count({
-  //       where: formQuery,
-  //     });
-
-  //     const result = { total, data, cursor: "" };
-
-  //     if (data.length < take) return result;
-
-  //     return { ...result, cursor: data.at(-1)?.id };
   //   }),
   // getRecentSubmissions: protectedProcedure.query(async ({ ctx }) => {
   //   return await ctx.db.formEndpointSubmission.findMany({

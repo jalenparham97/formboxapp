@@ -141,6 +141,8 @@ model Form {
     logo                             FileObject?
     removeFormboxBranding            Boolean              @default(false)
     sendEmailNotifications           Boolean              @default(true)
+    defaultEmailTo                   String               @default("") // This is the default email to send notifications to
+    emailsToNotify                   String[]
     saveAnswers                      Boolean              @default(false)
     sendRespondantEmailNotifications Boolean              @default(false)
     respondantEmailFromName          String               @default("")
@@ -153,10 +155,15 @@ model Form {
     limitResponses                   Boolean              @default(false)
     isClosed                         Boolean              @default(false)
     maxResponses                     Int?
-    emailsToNotify                   String[]
     useCustomRedirect                Boolean              @default(false)
+    customSuccessUrl                 String               @default("")
+    customFailUrl                    String               @default("")
     webhookEnabled                   Boolean              @default(false)
     webhookUrl                       String               @default("")
+    customHoneypot                   String               @default("")
+    googleRecaptchaEnabled           Boolean              @default(false)
+    googleRecaptchaSecretKey         String               @default("")
+    allowedDomains                   String               @default("")
     headerTitle                      String               @default("")
     headerDescription                String               @default("")
     backgroundColor                  String               @default("#ffffff")
@@ -167,7 +174,7 @@ model Form {
     buttonBorderStyle                FormInputBorderStyle @default(rounded)
     inputBorderStyle                 FormInputBorderStyle @default(rounded)
     fields                           FormField[]
-    // submissions                      Submission[]
+    submissions                      Submission[]
     createdAt                        DateTime             @default(now())
     updatedAt                        DateTime             @updatedAt
 
@@ -199,6 +206,24 @@ type FormField {
 type FormOption {
     id    String
     value String
+}
+
+model Submission {
+    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+    formId    String   @db.ObjectId
+    answers   Answer[]
+    isSpam    Boolean  @default(false)
+    form      Form?    @relation(fields: [formId], references: [id], onDelete: Cascade)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("submissions")
+}
+
+type Answer {
+    id    String?
+    label String
+    value String  @default("")
 }
 
 type FileObject {

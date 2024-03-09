@@ -61,6 +61,7 @@ export const env = createEnv({
     NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string(),
     NEXT_PUBLIC_UNSPLASH_ACCESS_KEY: z.string(),
     NEXT_PUBLIC_R2_PUBLIC_BUCKET_URL: z.string(),
+    NEXT_PUBLIC_SUBMISSIONS_API_URL: z.string(),
   },
 
   /**
@@ -103,6 +104,8 @@ export const env = createEnv({
       process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY,
     NEXT_PUBLIC_R2_PUBLIC_BUCKET_URL:
       process.env.NEXT_PUBLIC_R2_PUBLIC_BUCKET_URL,
+    NEXT_PUBLIC_SUBMISSIONS_API_URL:
+      process.env.NEXT_PUBLIC_SUBMISSIONS_API_URL,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
