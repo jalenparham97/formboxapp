@@ -81,7 +81,7 @@ export const HttpStatus = {
 } as const;
 
 export const submissionErrors = {
-  DISABLED: "DISABLED",
+  CLOSED: "CLOSED",
   DOMAIN_NOT_ALLOWED: "DOMAIN_NOT_ALLOWED",
   FORM_NOT_FOUND: "FORM_NOT_FOUND",
 } as const;
