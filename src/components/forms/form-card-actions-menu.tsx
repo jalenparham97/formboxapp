@@ -2,11 +2,10 @@
 
 import {
   IconBolt,
+  IconCode,
   IconDots,
   IconInbox,
-  IconPencil,
   IconSettings,
-  IconShare,
   IconTrash,
 } from "@tabler/icons-react";
 import {
@@ -46,23 +45,17 @@ export function FormCardActionsMenu({ form }: Props) {
                 <IconDots size={18} />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[170px]">
-              <Link href={`/editor/${form.id}/create`}>
-                <DropdownMenuItem>
-                  <IconPencil className="mr-2 h-4 w-4" />
-                  <span>Edit form</span>
-                </DropdownMenuItem>
-              </Link>
+            <DropdownMenuContent align="end" className="w-[180px]">
               <Link href={`/dashboard/${form.orgId}/forms/${form.id}`}>
                 <DropdownMenuItem>
                   <IconInbox className="mr-2 h-4 w-4" />
                   <span>Submissions</span>
                 </DropdownMenuItem>
               </Link>
-              <Link href={`/dashboard/${form.orgId}/forms/${form.id}/share`}>
+              <Link href={`/dashboard/${form.orgId}/forms/${form.id}/setup`}>
                 <DropdownMenuItem>
-                  <IconShare className="mr-2 h-4 w-4" />
-                  <span>Share</span>
+                  <IconCode className="mr-2 h-4 w-4" />
+                  <span>Setup instructions</span>
                 </DropdownMenuItem>
               </Link>
               <Link

@@ -29,7 +29,7 @@ export default async function RootLayout({
     <html lang="en">
       <body className={`font-sans ${inter.variable}`}>
         <SessionProvider session={session}>
-          <NextTopLoader showSpinner={false} />
+          <NextTopLoader showSpinner={false} color="#000" />
           <Toaster />
           <TRPCReactProvider>{children}</TRPCReactProvider>
         </SessionProvider>

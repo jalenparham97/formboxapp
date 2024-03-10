@@ -1,26 +1,37 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useOrgById, useOrgUpdateMutation } from "@/queries/org.queries";
+import {
+  useOrgById,
+  useOrgDeleteMutation,
+  useOrgUpdateMutation,
+} from "@/queries/org.queries";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Divider } from "@/components/ui/divider";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useDialog } from "@/hooks/use-dialog";
+import { OrgDeleteDialog } from "./org-delete-dialog";
+import { useRouter } from "next/navigation";
 
 interface Props {
   orgId: string;
 }
 
 export function OrgSettingsView({ orgId }: Props) {
-  const org = useOrgById(orgId);
+  const router = useRouter();
+  const [deleteModal, deleteModalHandler] = useDialog();
   const [orgName, setOrgName] = useState<string | null | undefined>("");
+
+  const org = useOrgById(orgId);
 
   useEffect(() => {
     setOrgName(org?.data?.name);
   }, [org.data]);
 
   const orgUpdateMutation = useOrgUpdateMutation(orgId);
+  const orgDeleteMutation = useOrgDeleteMutation();
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -28,6 +39,15 @@ export function OrgSettingsView({ orgId }: Props) {
     try {
       const name = orgName || (org?.data?.name as string);
       return await orgUpdateMutation.mutateAsync({ id: orgId, name });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await orgDeleteMutation.mutateAsync({ id: orgId });
+      router.push(`/organizations`);
     } catch (error) {
       console.log(error);
     }
@@ -84,10 +104,20 @@ export function OrgSettingsView({ orgId }: Props) {
           </div>
           <Divider />
           <div className="p-6">
-            <Button variant="destructive">Delete organization</Button>
+            <Button variant="destructive" onClick={deleteModalHandler.open}>
+              Delete organization
+            </Button>
           </div>
         </Card>
       </div>
+
+      <OrgDeleteDialog
+        title={org?.data?.name}
+        open={deleteModal}
+        onClose={deleteModalHandler.close}
+        onDelete={handleDelete}
+        loading={orgDeleteMutation.isLoading}
+      />
     </div>
   );
 }
