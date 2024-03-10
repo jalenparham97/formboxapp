@@ -7,8 +7,8 @@ export const htmlExampleCode = (
   method="POST"
 >
   <label>
-    Your email:
-    <input type="email" name="email"> <!-- use this to reply to respondants -->
+    Your email: <!-- use this to reply to respondants -->
+    <input type="email" name="email">
   </label>
   <label>
     Your message:

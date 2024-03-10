@@ -53,7 +53,7 @@ export async function GET(
         status: 200,
         headers: {
           "Content-Disposition": `attachment; filename="${dash(form.name.toLowerCase())}-${nanoid(6)}.csv"`,
-          "Content-Type": "text/csv",
+          "Content-Type": "application/csv",
         },
       });
     }
@@ -63,7 +63,7 @@ export async function GET(
         status: 200,
         headers: {
           "Content-Disposition": `attachment; filename="${dash(form.name.toLowerCase())}-${nanoid(6)}.json"`,
-          "Content-Type": "text/json",
+          "Content-Type": "application/json",
         },
       });
     }

@@ -1,6 +1,11 @@
 import NextAuth from "next-auth";
 import { authConfig } from "@/auth.config";
-import { apiAuthPrefix, authRoutes, publicRoutes } from "@/routes";
+import {
+  apiAuthPrefix,
+  apiJobsPrefix,
+  authRoutes,
+  publicRoutes,
+} from "@/routes";
 import { DEFAULT_LOGIN_REDIRECT } from "./utils/constants";
 
 export const { auth } = NextAuth(authConfig);
@@ -10,10 +15,11 @@ export default auth((req) => {
   const isLoggedIn = !!req.auth;
 
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
+  const isApiJobsRoute = nextUrl.pathname.startsWith(apiJobsPrefix);
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
-  if (isApiAuthRoute) {
+  if (isApiAuthRoute || isApiJobsRoute) {
     return null;
   }
 
