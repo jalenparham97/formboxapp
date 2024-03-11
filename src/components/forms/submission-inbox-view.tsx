@@ -84,7 +84,7 @@ export function SubmissionInboxView({ formId }: Props) {
 
       {!submissions?.isLoading && (
         <>
-          <div className="mt-4">
+          <div className="mt-6">
             <div className="space-y-4">
               {data?.map((submission) => (
                 <SubmissionCard key={submission.id} submission={submission} />
@@ -103,7 +103,7 @@ export function SubmissionInboxView({ formId }: Props) {
           )}
 
           {noSearchResults && (
-            <div className="mt-4 rounded-xl border border-gray-300 p-28">
+            <div className="mt-6 rounded-xl border border-gray-300 p-28">
               <EmptyState
                 title="No search results"
                 subtitle="Please check the spelling or filter criteria"

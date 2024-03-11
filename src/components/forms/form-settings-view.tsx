@@ -535,7 +535,7 @@ export function FormSettingsView({ orgId, formId }: Props) {
             )}
           </div>
 
-          <Divider />
+          {/* <Divider />
 
           <div className="px-4 py-5 sm:px-6">
             <div className="flex items-center justify-between space-x-16">
@@ -569,7 +569,7 @@ export function FormSettingsView({ orgId, formId }: Props) {
                 />
               </div>
             )}
-          </div>
+          </div> */}
         </Paper>
       </div>
 
