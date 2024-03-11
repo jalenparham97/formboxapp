@@ -84,4 +84,5 @@ export const submissionErrors = {
   CLOSED: "CLOSED",
   DOMAIN_NOT_ALLOWED: "DOMAIN_NOT_ALLOWED",
   FORM_NOT_FOUND: "FORM_NOT_FOUND",
+  LIMIT_REACHED: "LIMIT_REACHED",
 } as const;

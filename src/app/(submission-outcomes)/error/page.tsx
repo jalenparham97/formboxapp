@@ -27,6 +27,10 @@ export default function ErrorPage({ searchParams }: Props) {
       return "The form you are trying to submit to does not exist.";
     }
 
+    if (error === submissionErrors.LIMIT_REACHED) {
+      return "The owner of this form is no longer accepting submissions.";
+    }
+
     return "There was a problem processing your form submission.";
   }
 
