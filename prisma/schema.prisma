@@ -95,6 +95,7 @@ model Org {
     stripePriceId            String?
     stripeSubscriptionStatus String?
     stripePlanNickname       String?
+    stripePlan               String?
     stripeCancelAtPeriodEnd  Boolean?    @default(false)
     stripeCurrentPeriodEnd   DateTime?
     createdAt                DateTime    @default(now())
