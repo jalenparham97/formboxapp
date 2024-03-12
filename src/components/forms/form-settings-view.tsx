@@ -585,7 +585,7 @@ export function FormSettingsView({ orgId, formId }: Props) {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <h3 className="text-xl font-semibold">Custom redirect</h3>
-                {!hasAccess("Webhooks") && <UpgradeBadge />}
+                {!hasAccess("Custom redirect") && <UpgradeBadge />}
               </div>
             </div>
           </div>
@@ -676,7 +676,7 @@ export function FormSettingsView({ orgId, formId }: Props) {
               <div className="space-y-1">
                 <div className="flex items-center space-x-4">
                   <h4 className="font-semibold">Custom honeypot</h4>
-                  {!hasAccess("Domain restrictions") && <UpgradeBadge />}
+                  {!hasAccess("Custom honeypot") && <UpgradeBadge />}
                 </div>
                 <p className="text-sm text-gray-600">
                   The hidden honeypot field (&quot;_gotcha&quot;) can be used in

@@ -57,7 +57,7 @@ const FEATURE_UNLOCKS_BY_PLAN: Record<string, Feature[]> = {
     "Email notifications",
     "Custom redirect",
     "Auto responses",
-    "Domain restrictions",
+    "Custom honeypot",
     "Integrations",
     "Basic support",
   ],

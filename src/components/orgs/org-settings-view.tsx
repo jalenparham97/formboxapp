@@ -46,7 +46,10 @@ export function OrgSettingsView({ orgId }: Props) {
 
   const handleDelete = async () => {
     try {
-      await orgDeleteMutation.mutateAsync({ id: orgId });
+      await orgDeleteMutation.mutateAsync({
+        id: orgId,
+        stripeCustomerId: org?.data?.stripeCustomerId || "",
+      });
       router.push(`/organizations`);
     } catch (error) {
       console.log(error);
