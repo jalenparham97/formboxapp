@@ -1,10 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { submissionErrors } from "@/utils/constants";
+import { COMPANY_NAME, submissionErrors } from "@/utils/constants";
 import { cn } from "@/utils/tailwind-helpers";
 import { IconArrowLeft, IconExclamationCircle } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
+
+export const metadata = {
+  title: `Error - ${COMPANY_NAME}`,
+};
 
 interface Props {
   searchParams: { [key: string]: string | string[] | undefined };

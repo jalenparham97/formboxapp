@@ -7,6 +7,7 @@ import { SessionProvider } from "next-auth/react";
 import { auth } from "@/libs/auth";
 import { Toaster } from "sonner";
 import NextTopLoader from "nextjs-toploader";
+import { COMPANY_NAME } from "@/utils/constants";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -14,8 +15,7 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "SaaS Template",
-  description: "A template for quick saas creation.",
+  title: COMPANY_NAME,
 };
 
 export default async function RootLayout({

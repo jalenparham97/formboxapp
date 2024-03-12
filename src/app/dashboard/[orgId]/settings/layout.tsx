@@ -1,8 +1,8 @@
 import { SettingsLayout } from "@/components/settings/settings-layout";
+import { COMPANY_NAME } from "@/utils/constants";
 
 export const metadata = {
-  title: "Settings | SaaS Template",
-  description: "Manage account and website settings.",
+  title: `Settings - ${COMPANY_NAME}`,
 };
 
 interface Props {

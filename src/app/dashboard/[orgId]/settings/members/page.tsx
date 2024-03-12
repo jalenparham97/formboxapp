@@ -1,5 +1,9 @@
 import { OrgMembersView } from "@/components/orgs/org-members-view";
 
+export const metadata = {
+  title: `Members - Settings`,
+};
+
 interface Props {
   params: { orgId: string };
 }

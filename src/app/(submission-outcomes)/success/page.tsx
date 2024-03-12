@@ -1,9 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { COMPANY_NAME } from "@/utils/constants";
 import { cn } from "@/utils/tailwind-helpers";
 import { IconArrowLeft, IconCircleCheck } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
+
+export const metadata = {
+  title: `Success - ${COMPANY_NAME}`,
+};
 
 export default function SuccessPage() {
   const router = useRouter();
