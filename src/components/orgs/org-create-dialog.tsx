@@ -19,7 +19,7 @@ import { type OrgCreateFields } from "@/types/org.types";
 import { nanoid } from "@/libs/nanoid";
 
 const schema = z.object({
-  name: z.string().min(1, "Workspace name is a required field."),
+  name: z.string().min(1, "Organization name is a required field."),
 });
 
 interface Props extends DialogProps {
@@ -56,8 +56,7 @@ export function OrgCreateDialog({ open, onClose }: Props) {
         </DialogHeader>
 
         <DialogDescription>
-          Group forms per team, project, or client, and control member access to
-          the forms.
+          Add a new organization to manage your team and forms.
         </DialogDescription>
 
         <form onSubmit={handleSubmit(onSubmit)}>
