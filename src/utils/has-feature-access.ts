@@ -6,9 +6,9 @@ const BUSINESS_PLAN = "business";
 export type Plan = "free" | "starter" | "professional" | "business";
 
 export type Feature =
-  | "1 form endpoints"
-  | "5 form endpoints"
-  | "Unlimited form endpoints"
+  | "1 forms"
+  | "5 forms"
+  | "Unlimited forms"
   | "Unlimited team members"
   | "Unlimited form submissions"
   | "Unlimited submission archive"
@@ -36,7 +36,7 @@ export type Feature =
  */
 const FEATURE_UNLOCKS_BY_PLAN: Record<string, Feature[]> = {
   [FREE_PLAN]: [
-    "1 form endpoints",
+    "1 forms",
     "Unlimited team members",
     "Unlimited form submissions",
     "60 days submission archive",
@@ -47,7 +47,7 @@ const FEATURE_UNLOCKS_BY_PLAN: Record<string, Feature[]> = {
     "Basic support",
   ],
   [STARTER_PLAN]: [
-    "5 form endpoints",
+    "5 forms",
     "Unlimited team members",
     "Unlimited form submissions",
     "90 days submission archive",
@@ -62,7 +62,7 @@ const FEATURE_UNLOCKS_BY_PLAN: Record<string, Feature[]> = {
     "Basic support",
   ],
   [PROFESSIONAL_PLAN]: [
-    "Unlimited form endpoints",
+    "Unlimited forms",
     "Unlimited team members",
     "Unlimited form submissions",
     "365 days submission archive",
@@ -79,7 +79,7 @@ const FEATURE_UNLOCKS_BY_PLAN: Record<string, Feature[]> = {
     "Basic support",
   ],
   [BUSINESS_PLAN]: [
-    "Unlimited form endpoints",
+    "Unlimited forms",
     "Unlimited team members",
     "Unlimited form submissions",
     "Unlimited submission archive",

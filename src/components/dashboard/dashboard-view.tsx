@@ -27,6 +27,8 @@ import { useInfiniteForms } from "@/queries/form.queries";
 import { type FormOutput, type InfiniteFormsData } from "@/types/form.types";
 import { Skeleton } from "../ui/skeleton";
 import { FormCardActionsMenu } from "../forms/form-card-actions-menu";
+import { hasFeatureAccess } from "@/utils/has-feature-access";
+import { LimitReachedModal } from "../ui/limit-reached-modal";
 
 const loadingItems = new Array(5).fill("");
 
@@ -71,6 +73,24 @@ export function DashboardView({ orgId }: Props) {
 
   const data = useMemo(() => formatForms(forms.data), [forms.data]);
 
+  const openCreateFormModal = () => {
+    const plan = org.data?.stripePlan || "free";
+
+    if (hasFeatureAccess(plan, "Unlimited forms")) {
+      return formCreateDialogHandler.open();
+    }
+
+    if (hasFeatureAccess(plan, "5 forms") && Number(data?.length) < 5) {
+      return formCreateDialogHandler.open();
+    }
+
+    if (hasFeatureAccess(plan, "1 forms") && Number(data?.length) < 1) {
+      return formCreateDialogHandler.open();
+    }
+
+    return limitReachedModalHandlers.open();
+  };
+
   const noSearchResults = isEmpty(data) && !isEmpty(searchString);
 
   return (
@@ -81,7 +101,7 @@ export function DashboardView({ orgId }: Props) {
           <div>
             <Button
               leftIcon={<IconPlus size={16} />}
-              onClick={formCreateDialogHandler.open}
+              onClick={openCreateFormModal}
             >
               Create form
             </Button>
@@ -151,7 +171,7 @@ export function DashboardView({ orgId }: Props) {
                 actionButton={
                   <Button
                     leftIcon={<IconPlus size={16} />}
-                    onClick={formCreateDialogHandler.open}
+                    onClick={openCreateFormModal}
                   >
                     Create form
                   </Button>
@@ -180,6 +200,14 @@ export function DashboardView({ orgId }: Props) {
         open={formCreateDialog}
         onClose={formCreateDialogHandler.close}
         orgId={orgId}
+      />
+
+      <LimitReachedModal
+        title="You have reached your forms limit"
+        description="Please upgrade your account to create more forms."
+        open={limitReachedModal}
+        onClose={limitReachedModalHandlers.close}
+        href={`/dashboard/${orgId}/settings/subscription`}
       />
 
       <OrgInviteAcceptModal
