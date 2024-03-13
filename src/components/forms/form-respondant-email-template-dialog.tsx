@@ -53,10 +53,7 @@ export function FormRespondantEmailTemplateDialog({
   }
 
   async function onSubmit(data: FormUpdateData) {
-    console.log("data: ", data);
-    await submit({
-      ...data,
-    });
+    await submit({ ...data });
     closeModal();
   }
 

@@ -48,7 +48,7 @@ export const {
   },
   callbacks: {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
+    // @ts-ignore
     async session({ session, token }) {
       if (token.sub && session.user) {
         session.user.id = token.sub;

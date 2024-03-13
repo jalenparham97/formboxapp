@@ -20,10 +20,10 @@ export function FormSubmissionsView({ formId }: Props) {
         <SegmentedControlsTrigger value="inbox">Inbox</SegmentedControlsTrigger>
         <SegmentedControlsTrigger value="spam">Spam</SegmentedControlsTrigger>
       </SegmentedControlsList>
-      <SegmentedControlsContent value="inbox" className="mt-4">
+      <SegmentedControlsContent value="inbox" className="mt-6">
         <SubmissionInboxView formId={formId} />
       </SegmentedControlsContent>
-      <SegmentedControlsContent value="spam" className="mt-4">
+      <SegmentedControlsContent value="spam" className="mt-6">
         <SubmissionSpamView formId={formId} />
       </SegmentedControlsContent>
     </SegmentedControls>

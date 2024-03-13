@@ -48,7 +48,7 @@ export function FormCreateDialog({ open, onClose, orgId }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={closeModal}>
-      <DialogContent className="sm:max-w-[465px]">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Create a new form</DialogTitle>
         </DialogHeader>

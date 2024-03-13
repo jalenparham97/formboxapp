@@ -19,7 +19,9 @@ import { Input } from "../ui/input";
 import { MaxWidthWrapper } from "../ui/max-width-wrapper";
 import { FormDeleteDialog } from "./form-delete-dialog";
 import { FormRespondantEmailTemplateDialog } from "./form-respondant-email-template-dialog";
-import { Textarea } from "../ui/textarea";
+import { type Feature, hasFeatureAccess } from "@/utils/has-feature-access";
+import { useOrgById } from "@/queries/org.queries";
+import { Badge } from "../ui/badge";
 
 function getEmailsToNotify(emails: string[]) {
   return emails.map((email) => email.trim()).join(", ");
@@ -43,6 +45,8 @@ export function FormSettingsView({ orgId, formId }: Props) {
   useEffect(() => {
     setForm(formData);
   }, [formData]);
+
+  const org = useOrgById(orgId);
 
   const updateMutation = useFormUpdateMutation();
   const deleteMutation = useFormDeleteMutation(orgId);
@@ -306,6 +310,9 @@ export function FormSettingsView({ orgId, formId }: Props) {
         },
     );
   };
+  const hasAccess = (feature: Feature) => {
+    return hasFeatureAccess(org.data?.stripePlan, feature);
+  };
 
   return (
     <div className="pb-[100px]">
@@ -341,7 +348,7 @@ export function FormSettingsView({ orgId, formId }: Props) {
               </div>
             </div>
           </div>
-          <Divider />
+          {/* <Divider />
           <div className="px-4 py-5 sm:px-6">
             <div className="flex items-center justify-between space-x-16">
               <div className="space-y-1">
@@ -354,11 +361,10 @@ export function FormSettingsView({ orgId, formId }: Props) {
                 <Switch
                   checked={form?.removeFormboxBranding}
                   onCheckedChange={handleRemoveFormboxBrandingChange}
-                  // disabled={!hasAccess("Auto responses")}
                 />
               </div>
             </div>
-          </div>
+          </div> */}
           <Divider />
           <div className="px-5 py-5 sm:px-6">
             <div className="flex items-center justify-between">
@@ -416,7 +422,6 @@ export function FormSettingsView({ orgId, formId }: Props) {
                   placeholder="e.g. email@example.com, email2@example.com"
                   defaultValue={getEmailsToNotify(form?.emailsToNotify || [""])}
                   onChange={handleEmailsToNotifyChange}
-                  // disabled={!hasAccess("Webhooks")}
                 />
               </div>
             )}
@@ -427,9 +432,13 @@ export function FormSettingsView({ orgId, formId }: Props) {
           <div className="px-4 py-5 sm:px-6">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <h4 className="font-semibold">
-                  Respondent email notifications
-                </h4>
+                <div className="flex items-center space-x-4">
+                  <h4 className="font-semibold">
+                    Respondent email notifications
+                  </h4>
+                  {!hasAccess("Auto responses") && <UpgradeBadge />}
+                </div>
+
                 <p className="text-sm text-gray-600">
                   Send a customized email to respondents after a successful form
                   submission.
@@ -439,7 +448,7 @@ export function FormSettingsView({ orgId, formId }: Props) {
                 <Switch
                   checked={form?.sendRespondantEmailNotifications}
                   onCheckedChange={handleRespondantEmailNotificationChange}
-                  // disabled={!hasAccess("Auto responses")}
+                  disabled={!hasAccess("Auto responses")}
                 />
               </div>
             </div>
@@ -461,7 +470,7 @@ export function FormSettingsView({ orgId, formId }: Props) {
                     <Button
                       variant="outline"
                       onClick={respondantEmailModalHandler.open}
-                      // disabled={!hasAccess("Auto responses")}
+                      disabled={!hasAccess("Auto responses")}
                     >
                       Edit template
                     </Button>
@@ -479,7 +488,6 @@ export function FormSettingsView({ orgId, formId }: Props) {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <h3 className="text-xl font-semibold">Access</h3>
-                {/* {!hasAccess("Webhooks") && <ProBadge />} */}
               </div>
             </div>
           </div>
@@ -517,7 +525,6 @@ export function FormSettingsView({ orgId, formId }: Props) {
                 <Switch
                   checked={form?.limitResponses}
                   onCheckedChange={handleLimitResponsesChange}
-                  // disabled={!hasAccess("Webhooks")}
                 />
               </div>
             </div>
@@ -529,13 +536,12 @@ export function FormSettingsView({ orgId, formId }: Props) {
                   type="number"
                   defaultValue={form?.maxResponses || Infinity}
                   onChange={handleMaxResponsesChange}
-                  // disabled={!hasAccess("Webhooks")}
                 />
               </div>
             )}
           </div>
 
-          <Divider />
+          {/* <Divider />
 
           <div className="px-4 py-5 sm:px-6">
             <div className="flex items-center justify-between space-x-16">
@@ -569,7 +575,7 @@ export function FormSettingsView({ orgId, formId }: Props) {
                 />
               </div>
             )}
-          </div>
+          </div> */}
         </Paper>
       </div>
 
@@ -579,7 +585,7 @@ export function FormSettingsView({ orgId, formId }: Props) {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <h3 className="text-xl font-semibold">Custom redirect</h3>
-                {/* {!hasAccess("Webhooks") && <ProBadge />} */}
+                {!hasAccess("Custom redirect") && <UpgradeBadge />}
               </div>
             </div>
           </div>
@@ -597,7 +603,7 @@ export function FormSettingsView({ orgId, formId }: Props) {
                 <Switch
                   checked={form?.useCustomRedirect}
                   onCheckedChange={handleUseCustomRedirectChange}
-                  // disabled={!hasAccess("Webhooks")}
+                  disabled={!hasAccess("Custom redirect")}
                 />
               </div>
             </div>
@@ -620,6 +626,7 @@ export function FormSettingsView({ orgId, formId }: Props) {
                       placeholder="https://example.com/thanks"
                       defaultValue={form?.customSuccessUrl}
                       onChange={handleSuccessUrlChange}
+                      disabled={!hasAccess("Custom redirect")}
                     />
                   </div>
                 </div>
@@ -635,7 +642,6 @@ export function FormSettingsView({ orgId, formId }: Props) {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <h3 className="text-xl font-semibold">Security</h3>
-                {/* {!hasAccess("Webhooks") && <ProBadge />} */}
               </div>
             </div>
           </div>
@@ -644,7 +650,10 @@ export function FormSettingsView({ orgId, formId }: Props) {
           <div className="px-4 py-5 sm:px-6">
             <div className="flex items-center justify-between space-x-16">
               <div className="space-y-1">
-                <h4 className="font-semibold">Allowed domains</h4>
+                <div className="flex items-center space-x-4">
+                  <h4 className="font-semibold">Allowed domains</h4>
+                  {!hasAccess("Domain restrictions") && <UpgradeBadge />}
+                </div>
                 <p className="text-sm text-gray-600">
                   Restrict form submissions to specific domains.
                 </p>
@@ -656,7 +665,7 @@ export function FormSettingsView({ orgId, formId }: Props) {
                 placeholder="e.g. example.com, blog.example.com"
                 defaultValue={form?.allowedDomains}
                 onChange={handleAllowedDomainsChange}
-                // disabled={!hasAccess("Domain restrictions")}
+                disabled={!hasAccess("Domain restrictions")}
               />
             </div>
           </div>
@@ -665,7 +674,10 @@ export function FormSettingsView({ orgId, formId }: Props) {
           <div className="px-4 py-5 sm:px-6">
             <div className="flex items-center justify-between space-x-16">
               <div className="space-y-1">
-                <h4 className="font-semibold">Custom honeypot</h4>
+                <div className="flex items-center space-x-4">
+                  <h4 className="font-semibold">Custom honeypot</h4>
+                  {!hasAccess("Custom honeypot") && <UpgradeBadge />}
+                </div>
                 <p className="text-sm text-gray-600">
                   The hidden honeypot field (&quot;_gotcha&quot;) can be used in
                   conjunction with our supported spam filtering methods, and
@@ -679,7 +691,7 @@ export function FormSettingsView({ orgId, formId }: Props) {
                 placeholder="_botvortex"
                 defaultValue={form?.customHoneypot}
                 onChange={handleCustomHoneypotChange}
-                // disabled={!hasAccess("Domain restrictions")}
+                disabled={!hasAccess("Custom honeypot")}
               />
             </div>
           </div>
@@ -697,7 +709,6 @@ export function FormSettingsView({ orgId, formId }: Props) {
                 <Switch
                   checked={form?.googleRecaptchaEnabled}
                   onCheckedChange={handleGoogleRecaptchaChange}
-                  // disabled={!hasAccess("Webhooks")}
                 />
               </div>
             </div>
@@ -736,7 +747,7 @@ export function FormSettingsView({ orgId, formId }: Props) {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <h3 className="text-xl font-semibold">Webhook</h3>
-                {/* {!hasAccess("Webhooks") && <ProBadge />} */}
+                {!hasAccess("Webhooks") && <UpgradeBadge />}
               </div>
             </div>
           </div>
@@ -753,7 +764,7 @@ export function FormSettingsView({ orgId, formId }: Props) {
                 <Switch
                   checked={form?.webhookEnabled}
                   onCheckedChange={handleWebhookEnabledChange}
-                  // disabled={!hasAccess("Webhooks")}
+                  disabled={!hasAccess("Webhooks")}
                 />
               </div>
             </div>
@@ -776,7 +787,7 @@ export function FormSettingsView({ orgId, formId }: Props) {
                       placeholder="https://example.com/webhook"
                       defaultValue={form?.webhookUrl}
                       onChange={handleWebhookUrlChange}
-                      // disabled={!hasAccess("Webhooks")}
+                      disabled={!hasAccess("Webhooks")}
                     />
                   </div>
                 </div>
@@ -815,4 +826,8 @@ export function FormSettingsView({ orgId, formId }: Props) {
       />
     </div>
   );
+}
+
+function UpgradeBadge() {
+  return <Badge variant="blue">Upgrade</Badge>;
 }

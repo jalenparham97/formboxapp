@@ -1,27 +1,25 @@
-const FREE_PLAN = "Free";
-const STARTER_PLAN = "Starter";
-const PROFESSIONAL_PLAN = "Professional";
-const BUSINESS_PLAN = "Business";
+const FREE_PLAN = "free";
+const STARTER_PLAN = "starter";
+const PROFESSIONAL_PLAN = "professional";
+const BUSINESS_PLAN = "business";
 
-export type Plan = "Free" | "Starter" | "Professional" | "Business";
+export type Plan = "free" | "starter" | "professional" | "business";
 
 export type Feature =
-  | "1 workspace"
   | "1 form endpoints"
   | "5 form endpoints"
-  | "Unlimited workspaces"
   | "Unlimited form endpoints"
   | "Unlimited team members"
   | "Unlimited form submissions"
   | "Unlimited submission archive"
-  | "30 days submission archive"
+  | "60 days submission archive"
   | "90 days submission archive"
   | "365 days submission archive"
   | "AJAX support"
   | "Spam Protection"
   | "Data export"
   | "Email notifications"
-  | "Custom Thank You Page"
+  | "Custom redirect"
   | "Auto responses"
   | "Domain restrictions"
   | "Webhooks"
@@ -38,11 +36,10 @@ export type Feature =
  */
 const FEATURE_UNLOCKS_BY_PLAN: Record<string, Feature[]> = {
   [FREE_PLAN]: [
-    "1 workspace",
     "1 form endpoints",
     "Unlimited team members",
     "Unlimited form submissions",
-    "30 days submission archive",
+    "60 days submission archive",
     "AJAX support",
     "Spam Protection",
     "Data export",
@@ -50,7 +47,6 @@ const FEATURE_UNLOCKS_BY_PLAN: Record<string, Feature[]> = {
     "Basic support",
   ],
   [STARTER_PLAN]: [
-    "1 workspace",
     "5 form endpoints",
     "Unlimited team members",
     "Unlimited form submissions",
@@ -59,14 +55,13 @@ const FEATURE_UNLOCKS_BY_PLAN: Record<string, Feature[]> = {
     "Spam Protection",
     "Data export",
     "Email notifications",
-    "Custom Thank You Page",
+    "Custom redirect",
     "Auto responses",
-    "Domain restrictions",
+    "Custom honeypot",
     "Integrations",
     "Basic support",
   ],
   [PROFESSIONAL_PLAN]: [
-    "Unlimited workspaces",
     "Unlimited form endpoints",
     "Unlimited team members",
     "Unlimited form submissions",
@@ -75,7 +70,7 @@ const FEATURE_UNLOCKS_BY_PLAN: Record<string, Feature[]> = {
     "Spam Protection",
     "Data export",
     "Email notifications",
-    "Custom Thank You Page",
+    "Custom redirect",
     "Auto responses",
     "Domain restrictions",
     "Integrations",
@@ -84,7 +79,6 @@ const FEATURE_UNLOCKS_BY_PLAN: Record<string, Feature[]> = {
     "Basic support",
   ],
   [BUSINESS_PLAN]: [
-    "Unlimited workspaces",
     "Unlimited form endpoints",
     "Unlimited team members",
     "Unlimited form submissions",
@@ -93,7 +87,7 @@ const FEATURE_UNLOCKS_BY_PLAN: Record<string, Feature[]> = {
     "Spam Protection",
     "Data export",
     "Email notifications",
-    "Custom Thank You Page",
+    "Custom redirect",
     "Auto responses",
     "Domain restrictions",
     "Integrations",

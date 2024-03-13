@@ -1,17 +1,14 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { Roles } from "@/types/utility.types";
-import {
-  OrgCreateSchema,
-  OrgUpdateSchema,
-  filterSchema,
-} from "@/utils/schemas";
+import { OrgUpdateSchema, filterSchema } from "@/utils/schemas";
 import { FILTER_TAKE } from "@/utils/constants";
 import { TRPCError } from "@trpc/server";
 import { randomBytes } from "crypto";
 import { hashToken } from "@/utils/hash-token";
 import { env } from "@/env";
 import { sendOrgInviteEmail } from "@/libs/mail";
+import { stripe } from "@/libs/stripe";
 
 export const orgRouter = createTRPCRouter({
   create: protectedProcedure
@@ -169,8 +166,14 @@ export const orgRouter = createTRPCRouter({
       });
     }),
   deleteById: protectedProcedure
-    .input(z.object({ id: z.string() }))
+    .input(
+      z.object({ id: z.string(), stripeCustomerId: z.string().optional() }),
+    )
     .mutation(async ({ ctx, input }) => {
+      if (input.stripeCustomerId) {
+        await stripe.customers.del(input.stripeCustomerId);
+      }
+
       return await ctx.db.org.delete({
         where: { id: input.id },
       });

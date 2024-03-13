@@ -69,10 +69,7 @@ export function DashboardLayout({ children }: Props) {
                         <Skeleton className="h-[35px] w-[200px] rounded-lg" />
                       )}
                       {!orgs.isLoading && orgs.data?.data && (
-                        <OrgSwitcher
-                          orgs={orgs.data?.data}
-                          className="w-[200px]"
-                        />
+                        <OrgSwitcher orgs={orgs.data?.data} />
                       )}
                     </div>
                     <div className="space-x-2">
@@ -91,9 +88,9 @@ export function DashboardLayout({ children }: Props) {
                     </div>
                   </div>
                   <div className="hidden space-x-4 sm:flex sm:items-center">
-                    <Button variant="outline">Feedback</Button>
+                    {/* <Button variant="outline">Feedback</Button> */}
 
-                    <Button
+                    {/* <Button
                       variant="outline"
                       size="icon"
                       className="text-gray-400 hover:text-gray-500"
@@ -102,11 +99,11 @@ export function DashboardLayout({ children }: Props) {
                         className="h-[22px] w-[22px]"
                         aria-hidden="true"
                       />
-                    </Button>
+                    </Button> */}
 
                     {/* Profile dropdown */}
                     <DropdownMenu>
-                      <DropdownMenuTrigger className="flex items-center lg:-mr-4">
+                      <DropdownMenuTrigger className="flex items-center">
                         <span className="sr-only">Open user menu</span>
                         <Avatar>
                           <AvatarImage src={user?.image || ""} />

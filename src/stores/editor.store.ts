@@ -16,13 +16,11 @@ export const useFormStore = create<FormStore>()((set) => ({
   setFormState: (formState) => set({ formState }),
   setSelectedElement: (selectedElement) => set({ selectedElement }),
   addElement: (field, index) => {
-    console.log("field: ", field);
     set(({ formState }) => {
       if (formState) {
         const newFields = [...formState.fields];
         newFields.splice(index, 0, field);
         formState.fields = newFields;
-        console.log("elements: ", formState.fields);
         return { formState };
       }
       return { formState: null };

@@ -60,7 +60,7 @@ export function LoginForm() {
     <>
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex items-center justify-center">
-          <Logo className="w-40" noLink />
+          <Logo className="w-40" href="https://formbox.app" />
         </div>
       </div>
 

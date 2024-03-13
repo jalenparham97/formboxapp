@@ -2,11 +2,7 @@
  * An array of routes that are accessible to the public
  * These routes do not require authentication
  */
-export const publicRoutes = [
-  "/api/webhooks/stripe",
-  "/api/jobs/send-submission-email-notifications",
-  "/api/jobs/send-respondent-email-notifications",
-];
+export const publicRoutes = ["/api/webhooks/stripe", "/success", "/error"];
 
 /**
  * An array of routes that are used for authentication
@@ -19,6 +15,11 @@ export const authRoutes = ["/auth/login"];
  * Routes that start with this prefix are used for API authentication purposes
  */
 export const apiAuthPrefix = "/api/auth";
+/**
+ * The prefix for API job routes
+ * Routes that start with this prefix are used for qstash/upstash job processing
+ */
+export const apiJobsPrefix = "/api/jobs";
 
 /**
  * The prefix for TRPC routes

@@ -15,8 +15,6 @@ export const submissionsRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const formQuery = { formId: input.formId };
 
-      console.log("take: ", input.take);
-
       const take = input?.take ?? FILTER_TAKE;
 
       const data = await ctx.db.submission.findMany({
@@ -48,8 +46,6 @@ export const submissionsRouter = createTRPCRouter({
       const total = await ctx.db.submission.count({
         where: formQuery,
       });
-
-      console.log("total: ", data.length);
 
       const result = { total, data, cursor: "" };
 

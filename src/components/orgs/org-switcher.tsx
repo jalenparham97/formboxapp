@@ -24,23 +24,22 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { type OrgsOutput } from "@/types/org.types";
+
+import { type OrgCreateFields, type OrgsOutput } from "@/types/org.types";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { getInitials } from "@/utils/get-initials";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useOrgAddMutation } from "@/queries/org.queries";
+import { nanoid } from "@/libs/nanoid";
+import { Badge } from "../ui/badge";
 
 type Org = OrgsOutput["data"][0];
 
@@ -55,6 +54,10 @@ function getUrl(orgId: string, pathname: string) {
   return `/dashboard/${orgId}/forms`;
 }
 
+const schema = z.object({
+  name: z.string().min(1, "Organization name is a required field."),
+});
+
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
   typeof PopoverTrigger
 >;
@@ -68,7 +71,15 @@ export function OrgSwitcher({ className, orgs }: OrgSwitcherProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
-  const [showNewTeamDialog, setShowNewTeamDialog] = React.useState(false);
+  const [showNewOrgDialog, setShowNewOrgDialog] = React.useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<{ name: string }>({
+    resolver: zodResolver(schema),
+  });
 
   const orgId = params.orgId as string;
 
@@ -78,10 +89,22 @@ export function OrgSwitcher({ className, orgs }: OrgSwitcherProps) {
     setSelectedOrg(getOrg(orgId, orgs) as Org);
   }, [orgId, orgs]);
 
+  const orgCreateMutation = useOrgAddMutation();
+
+  const closeModal = () => {
+    reset();
+    setShowNewOrgDialog(false);
+  };
+
+  const onSubmit = async (data: OrgCreateFields) => {
+    await orgCreateMutation.mutateAsync({ name: data.name, slug: nanoid(12) });
+    closeModal();
+  };
+
   return (
     <div>
       {orgs && (
-        <Dialog open={showNewTeamDialog} onOpenChange={setShowNewTeamDialog}>
+        <Dialog open={showNewOrgDialog} onOpenChange={setShowNewOrgDialog}>
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <DefaultButton
@@ -90,11 +113,11 @@ export function OrgSwitcher({ className, orgs }: OrgSwitcherProps) {
                 aria-expanded={open}
                 aria-label="Select an organization"
                 className={cn(
-                  "w-[200px] justify-between px-2.5 text-base shadow-none",
+                  "justify-between px-2.5 text-base shadow-none",
                   className,
                 )}
               >
-                <div className="flex items-center space-x-3">
+                <div className="flex w-full items-center space-x-3">
                   <Avatar className="h-[26px] w-[26px]">
                     <AvatarFallback className="text-sm uppercase text-white">
                       {getInitials(selectedOrg?.name, 1)}
@@ -103,11 +126,14 @@ export function OrgSwitcher({ className, orgs }: OrgSwitcherProps) {
                   <span className="truncate text-sm font-medium">
                     {selectedOrg?.name}
                   </span>
+                  <Badge className="capitalize">
+                    {selectedOrg?.stripePlan || "free"}
+                  </Badge>
                 </div>
-                <IconSelector className="ml-auto h-4 w-4 shrink-0 opacity-50" />
+                <IconSelector className="ml-3 h-4 w-4 shrink-0 opacity-50" />
               </DefaultButton>
             </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-0">
+            <PopoverContent className="w-[250px] p-0">
               <Command>
                 <CommandList>
                   <CommandInput placeholder="Search organization" />
@@ -121,7 +147,7 @@ export function OrgSwitcher({ className, orgs }: OrgSwitcherProps) {
                           router.push(getUrl(org.id, pathname));
                           setOpen(false);
                         }}
-                        className="text-sm"
+                        className="truncate text-sm"
                       >
                         {org.name}
                         <IconCheck
@@ -143,7 +169,7 @@ export function OrgSwitcher({ className, orgs }: OrgSwitcherProps) {
                       <CommandItem
                         onSelect={() => {
                           setOpen(false);
-                          setShowNewTeamDialog(true);
+                          setShowNewOrgDialog(true);
                         }}
                       >
                         <IconPlus className="mr-2 h-4 w-4" />
@@ -158,49 +184,32 @@ export function OrgSwitcher({ className, orgs }: OrgSwitcherProps) {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Create a new organization</DialogTitle>
-              <DialogDescription>
-                Add a new organization to manage your workspaces and forms.
-              </DialogDescription>
             </DialogHeader>
-            <div>
-              <div className="space-y-4 py-2 pb-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Team name</Label>
-                  <Input id="name" placeholder="Acme Inc." />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="plan">Subscription plan</Label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a plan" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="free">
-                        <span className="font-medium">Free</span> -{" "}
-                        <span className="text-muted-foreground">
-                          Trial for two weeks
-                        </span>
-                      </SelectItem>
-                      <SelectItem value="pro">
-                        <span className="font-medium">Pro</span> -{" "}
-                        <span className="text-muted-foreground">
-                          $9/month per user
-                        </span>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+
+            <DialogDescription>
+              Add a new organization to manage your team and forms.
+            </DialogDescription>
+
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div>
+                <Input
+                  label="Organization name"
+                  {...register("name")}
+                  error={errors.name !== undefined}
+                  errorMessage={errors?.name?.message}
+                  allowAutoComplete={false}
+                />
               </div>
-            </div>
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setShowNewTeamDialog(false)}
-              >
-                Close
-              </Button>
-              <Button type="submit">Create organization</Button>
-            </DialogFooter>
+
+              <DialogFooter className="mt-6">
+                <Button variant="outline" onClick={closeModal} type="button">
+                  Close
+                </Button>
+                <Button loading={orgCreateMutation.isLoading} type="submit">
+                  Create organization
+                </Button>
+              </DialogFooter>
+            </form>
           </DialogContent>
         </Dialog>
       )}

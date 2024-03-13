@@ -75,7 +75,7 @@ export function SubmissionSpamView({ formId }: Props) {
       </div>
 
       {submissions?.isLoading && (
-        <div className="mt-4 space-y-4">
+        <div className="mt-6 space-y-4">
           {loadingItems.map((_, index) => (
             <Skeleton key={index} className="h-[80px] w-full rounded-xl" />
           ))}
@@ -84,7 +84,7 @@ export function SubmissionSpamView({ formId }: Props) {
 
       {!submissions?.isLoading && (
         <>
-          <div className="mt-4">
+          <div className="mt-6">
             <div className="space-y-4">
               {data?.map((submission) => (
                 <SubmissionCard key={submission.id} submission={submission} />
@@ -93,7 +93,7 @@ export function SubmissionSpamView({ formId }: Props) {
           </div>
 
           {isEmpty(data) && !noSearchResults && (
-            <div className="mt-4 rounded-xl border border-gray-300 p-28">
+            <div className="mt-6 rounded-xl border border-gray-300 p-28">
               <EmptyState
                 title="No spam found"
                 subtitle="You dont have any spam submissions yet"
@@ -103,7 +103,7 @@ export function SubmissionSpamView({ formId }: Props) {
           )}
 
           {noSearchResults && (
-            <div className="mt-4 rounded-xl border border-gray-300 p-28">
+            <div className="mt-6 rounded-xl border border-gray-300 p-28">
               <EmptyState
                 title="No search results"
                 subtitle="Please check the spelling or filter criteria"

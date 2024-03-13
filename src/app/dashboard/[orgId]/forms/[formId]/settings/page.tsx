@@ -1,7 +1,16 @@
 import { FormSettingsView } from "@/components/forms/form-settings-view";
+import { api } from "@/trpc/server";
+import { type Metadata } from "next";
 
 interface Props {
   params: { formId: string; orgId: string };
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const form = await api.form.getById.query({ id: params.formId });
+  return {
+    title: `Settings - ${form?.name}`,
+  };
 }
 
 export default function SettingsPage({ params: { orgId, formId } }: Props) {

@@ -98,7 +98,7 @@ export function DashboardView({ orgId }: Props) {
       </div>
 
       {forms?.isLoading && (
-        <div className="mt-4 space-y-4">
+        <div className="mt-6 space-y-4">
           {loadingItems.map((_, index) => (
             <Skeleton key={index} className="h-[78px] w-full rounded-xl" />
           ))}
@@ -107,7 +107,7 @@ export function DashboardView({ orgId }: Props) {
 
       {!forms.isLoading && (
         <>
-          <div className="mt-4 space-y-4">
+          <div className="mt-6 space-y-4">
             {!isEmpty(data) && (
               <>
                 {data?.map((form) => (
@@ -143,7 +143,7 @@ export function DashboardView({ orgId }: Props) {
           </div>
 
           {isEmpty(data) && !noSearchResults && (
-            <div className="mt-4 rounded-xl border border-gray-300 p-28">
+            <div className="mt-6 rounded-xl border border-gray-300 p-28">
               <EmptyState
                 title="No forms yet"
                 subtitle="Get started by creating a new form."
@@ -163,7 +163,7 @@ export function DashboardView({ orgId }: Props) {
       )}
 
       {!forms?.isLoading && noSearchResults && (
-        <div className="mt-4 rounded-xl border border-gray-300 p-28">
+        <div className="mt-6 rounded-xl border border-gray-300 p-28">
           <EmptyState
             title="No search results"
             subtitle="Please check the spelling or filter criteria"

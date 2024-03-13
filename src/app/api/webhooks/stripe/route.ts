@@ -21,7 +21,7 @@ export async function POST(req: Request) {
     if (!sig || !webhookSecret) return;
     event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
   } catch (error: any) {
-    console.log(`❌ Error message: ${error.message}`);
+    console.error(`❌ Error message: ${error.message}`);
     return new Response(`Webhook Error: ${error.message}`, { status: 400 });
   }
 
@@ -46,6 +46,8 @@ export async function POST(req: Request) {
             stripePriceId: subscription.items.data[0]?.price.id,
             stripeSubscriptionStatus: subscription.status,
             stripePlanNickname: subscription.items.data[0]?.plan.nickname,
+            stripePlan:
+              subscription.items.data[0]?.plan.nickname?.split("-")[0],
             stripeCancelAtPeriodEnd: subscription.cancel_at_period_end,
             stripeCurrentPeriodEnd: new Date(
               subscription.current_period_end * 1000,
@@ -56,14 +58,16 @@ export async function POST(req: Request) {
         const subscription = event.data.object as Stripe.Subscription;
 
         // Update the price id and set the new period end.
-        await db.user.update({
+        await db.org.update({
           where: {
-            id: subscription.metadata?.userId as string,
+            id: subscription.metadata?.orgId as string,
           },
           data: {
             stripePriceId: subscription.items.data[0]?.price.id,
             stripeSubscriptionStatus: subscription.status,
             stripePlanNickname: subscription.items.data[0]?.plan.nickname,
+            stripePlan:
+              subscription.items.data[0]?.plan.nickname?.split("-")[0],
             stripeCancelAtPeriodEnd: subscription.cancel_at_period_end,
             stripeCurrentPeriodEnd: new Date(
               subscription.current_period_end * 1000,
@@ -73,13 +77,14 @@ export async function POST(req: Request) {
       } else if (event.type === "customer.subscription.deleted") {
         const subscription = event.data.object as Stripe.Subscription;
 
-        await db.user.update({
+        await db.org.update({
           where: {
-            id: subscription.metadata?.userId as string,
+            id: subscription.metadata?.orgId as string,
           },
           data: {
             stripeSubscriptionStatus: subscription.status,
             stripePlanNickname: null,
+            stripePlan: null,
             stripeCurrentPeriodEnd: new Date(
               subscription.current_period_end * 1000,
             ),
@@ -89,7 +94,7 @@ export async function POST(req: Request) {
         throw new Error("Unhandled relevant event!");
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return new Response(
         "Webhook handler failed. View your nextjs function logs.",
         {
