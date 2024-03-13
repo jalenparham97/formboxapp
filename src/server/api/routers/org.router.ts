@@ -38,6 +38,7 @@ export const orgRouter = createTRPCRouter({
       const take = input?.take || FILTER_TAKE;
 
       const data = await ctx.db.org.findMany({
+        cacheStrategy: { swr: 60 },
         where: {
           name: {
             contains: input?.searchString,
@@ -92,6 +93,7 @@ export const orgRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       const org = await ctx.db.org.findUnique({
+        cacheStrategy: { swr: 60 },
         where: { id: input.id },
         include: {
           members: {
@@ -112,6 +114,7 @@ export const orgRouter = createTRPCRouter({
         // project exists but user is not part of it
         if (org.members.length === 0) {
           const pendingInvites = await ctx.db.orgInvite.findUnique({
+            cacheStrategy: { swr: 60 },
             where: {
               email_orgId: {
                 email: ctx.user.email as string,
@@ -182,6 +185,7 @@ export const orgRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       return await ctx.db.orgMember.findMany({
+        cacheStrategy: { swr: 60 },
         where: { orgId: input.id },
         select: {
           id: true,
@@ -215,6 +219,7 @@ export const orgRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       return await ctx.db.orgInvite.findMany({
+        cacheStrategy: { swr: 60 },
         where: { orgId: input.id },
       });
     }),
@@ -301,6 +306,7 @@ export const orgRouter = createTRPCRouter({
     .input(z.object({ orgId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const invite = await ctx.db.orgInvite.findFirst({
+        cacheStrategy: { swr: 60 },
         where: {
           email: ctx.user.email as string,
           orgId: input.orgId,

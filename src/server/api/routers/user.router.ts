@@ -24,6 +24,7 @@ export const UserSchema = z.object({
 export const userRouter = createTRPCRouter({
   getUser: protectedProcedure.query(async ({ ctx }) => {
     const user = await ctx.db.user.findUnique({
+      cacheStrategy: { swr: 60 },
       where: { id: ctx.user.id },
       include: {
         accounts: {

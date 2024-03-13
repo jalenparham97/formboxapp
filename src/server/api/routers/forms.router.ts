@@ -24,6 +24,7 @@ export const formsRouter = createTRPCRouter({
       const take = input?.take ?? FILTER_TAKE;
 
       const data = await ctx.db.form.findMany({
+        cacheStrategy: { swr: 60 },
         where: {
           ...orgQuery,
           name: {
@@ -60,6 +61,7 @@ export const formsRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       return await ctx.db.form.findUnique({
+        cacheStrategy: { swr: 60 },
         where: { id: input.id },
         include: {
           _count: {
@@ -68,50 +70,6 @@ export const formsRouter = createTRPCRouter({
         },
       });
     }),
-  // getAllExportSubmissions: protectedProcedure
-  //   .input(
-  //     z.object({
-  //       formId: z.string(),
-  //       ...filterSchema,
-  //     }),
-  //   )
-  //   .query(async ({ ctx, input }) => {
-  //     const data = await ctx.db.formEndpointSubmission.findMany({
-  //       where: { formId: input.formId },
-  //     });
-
-  //     let fields: Record<string, string> = {};
-
-  //     return data.map((submission) => {
-  //       submission.fields.map((field) => {
-  //         fields[field.label] = field.value;
-  //       });
-
-  //       return {
-  //         ...fields,
-  //         isSpam: submission.isSpam,
-  //       };
-  //     });
-  //   }),
-  // getRecentSubmissions: protectedProcedure.query(async ({ ctx }) => {
-  //   return await ctx.db.formEndpointSubmission.findMany({
-  //     where: {
-  //       form: {
-  //         workspace: {
-  //           members: {
-  //             some: {
-  //               userId: ctx.user.id,
-  //             },
-  //           },
-  //         },
-  //       },
-  //     },
-  //     take: 5,
-  //     orderBy: {
-  //       createdAt: "desc",
-  //     },
-  //   });
-  // }),
   updateById: protectedProcedure
     .input(formUpdateSchema)
     .mutation(async ({ ctx, input }) => {
@@ -125,21 +83,4 @@ export const formsRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.form.delete({ where: { id: input.id } });
     }),
-  // updateSubmission: protectedProcedure
-  //   .input(
-  //     z.object({ submissionId: z.string(), isSpam: z.boolean().optional() }),
-  //   )
-  //   .mutation(async ({ ctx, input }) => {
-  //     return await ctx.db.formEndpointSubmission.update({
-  //       where: { id: input.submissionId },
-  //       data: { isSpam: input.isSpam },
-  //     });
-  //   }),
-  // deleteSubmission: protectedProcedure
-  //   .input(z.object({ submissionId: z.string(), formId: z.string() }))
-  //   .mutation(async ({ ctx, input }) => {
-  //     return await ctx.db.formEndpointSubmission.delete({
-  //       where: { id: input.submissionId },
-  //     });
-  //   }),
 });
