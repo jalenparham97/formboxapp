@@ -28,6 +28,8 @@ export function SubmissionExportMenu({ formId, isSpam }: Props) {
           <DropdownMenuContent align="center" className="w-[170px]">
             <Link
               href={`/api/exports/submissions/${formId}?format=csv&isSpam=${isSpam}`}
+              download={true}
+              target="_blank"
             >
               <DropdownMenuItem>
                 <IconFileDownload className="mr-2 h-4 w-4" />
@@ -36,6 +38,8 @@ export function SubmissionExportMenu({ formId, isSpam }: Props) {
             </Link>
             <Link
               href={`/api/exports/submissions/${formId}?format=json&isSpam=${isSpam}`}
+              download={true}
+              target="_blank"
             >
               <DropdownMenuItem>
                 <IconFileDownload className="mr-2 h-4 w-4" />
