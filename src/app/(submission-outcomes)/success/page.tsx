@@ -1,18 +1,13 @@
-"use client";
-
-import { Button } from "@/components/ui/button";
+import { RouterButton } from '@/components/ui/router-button';
 import { COMPANY_NAME } from "@/utils/constants";
 import { cn } from "@/utils/tailwind-helpers";
-import { IconArrowLeft, IconCircleCheck } from "@tabler/icons-react";
-import { useRouter } from "next/navigation";
+import { IconCircleCheck } from "@tabler/icons-react";
 
 export const metadata = {
   title: `Success - ${COMPANY_NAME}`,
 };
 
 export default function SuccessPage() {
-  const router = useRouter();
-
   return (
     <div
       className={cn(
@@ -24,14 +19,9 @@ export default function SuccessPage() {
       <p className="mt-4 font-light lg:text-xl">
         The form was submitted successfully.
       </p>
-      <Button
-        className="mt-8"
-        variant="secondary"
-        leftIcon={<IconArrowLeft size={16} />}
-        onClick={() => router.back()}
-      >
-        Back to previous page
-      </Button>
+      <div className='mt-8'>
+        <RouterButton />
+      </div>
     </div>
   );
 }
