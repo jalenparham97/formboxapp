@@ -69,10 +69,7 @@ export function DashboardLayout({ children }: Props) {
                         <Skeleton className="h-[35px] w-[200px] rounded-lg" />
                       )}
                       {!orgs.isLoading && orgs.data?.data && (
-                        <OrgSwitcher
-                          orgs={orgs.data?.data}
-                          className="w-[200px]"
-                        />
+                        <OrgSwitcher orgs={orgs.data?.data} />
                       )}
                     </div>
                     <div className="space-x-2">

@@ -24,20 +24,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { OrgCreateFields, type OrgsOutput } from "@/types/org.types";
+
+import { type OrgCreateFields, type OrgsOutput } from "@/types/org.types";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { getInitials } from "@/utils/get-initials";
@@ -46,6 +39,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useOrgAddMutation } from "@/queries/org.queries";
 import { nanoid } from "@/libs/nanoid";
+import { Badge } from "../ui/badge";
 
 type Org = OrgsOutput["data"][0];
 
@@ -119,11 +113,11 @@ export function OrgSwitcher({ className, orgs }: OrgSwitcherProps) {
                 aria-expanded={open}
                 aria-label="Select an organization"
                 className={cn(
-                  "w-[200px] justify-between px-2.5 text-base shadow-none",
+                  "justify-between px-2.5 text-base shadow-none",
                   className,
                 )}
               >
-                <div className="flex items-center space-x-3">
+                <div className="flex w-full items-center space-x-3">
                   <Avatar className="h-[26px] w-[26px]">
                     <AvatarFallback className="text-sm uppercase text-white">
                       {getInitials(selectedOrg?.name, 1)}
@@ -132,11 +126,14 @@ export function OrgSwitcher({ className, orgs }: OrgSwitcherProps) {
                   <span className="truncate text-sm font-medium">
                     {selectedOrg?.name}
                   </span>
+                  <Badge className="capitalize">
+                    {selectedOrg?.stripePlan || "free"}
+                  </Badge>
                 </div>
-                <IconSelector className="ml-auto h-4 w-4 shrink-0 opacity-50" />
+                <IconSelector className="ml-3 h-4 w-4 shrink-0 opacity-50" />
               </DefaultButton>
             </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-0">
+            <PopoverContent className="w-[250px] p-0">
               <Command>
                 <CommandList>
                   <CommandInput placeholder="Search organization" />
@@ -150,7 +147,7 @@ export function OrgSwitcher({ className, orgs }: OrgSwitcherProps) {
                           router.push(getUrl(org.id, pathname));
                           setOpen(false);
                         }}
-                        className="text-sm"
+                        className="truncate text-sm"
                       >
                         {org.name}
                         <IconCheck
