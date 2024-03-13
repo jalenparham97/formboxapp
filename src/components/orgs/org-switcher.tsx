@@ -149,7 +149,9 @@ export function OrgSwitcher({ className, orgs }: OrgSwitcherProps) {
                         }}
                         className="truncate text-sm"
                       >
-                        {org.name}
+                        <div className="flex items-center space-x-3">
+                          <span>{org.name}</span>
+                        </div>
                         <IconCheck
                           className={cn(
                             "ml-auto h-4 w-4",

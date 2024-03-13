@@ -14,6 +14,7 @@ interface Props extends DialogProps {
   onClose: () => void;
   title?: string;
   description: string;
+  href: string;
 }
 
 export function LimitReachedModal({
@@ -21,6 +22,7 @@ export function LimitReachedModal({
   open,
   title,
   description,
+  href,
 }: Props) {
   function closeModal() {
     onClose();
@@ -39,7 +41,7 @@ export function LimitReachedModal({
           <Button variant="outline" onClick={closeModal} className="w-full">
             Close
           </Button>
-          <Link href="/settings/subscription" className="w-full">
+          <Link href={href} className="w-full">
             <Button className="w-full">Upgrade</Button>
           </Link>
         </DialogFooter>

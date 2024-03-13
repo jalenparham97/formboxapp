@@ -1,5 +1,4 @@
 import { DashboardView } from "@/components/dashboard/dashboard-view";
-import { api } from "@/trpc/server";
 import { COMPANY_NAME } from "@/utils/constants";
 
 export const metadata = {
@@ -11,7 +10,5 @@ interface Props {
 }
 
 export default async function FormsPage({ params: { orgId } }: Props) {
-  // const initialData = await api.form.getAll.query({});
-
   return <DashboardView orgId={orgId} />;
 }
