@@ -1,9 +1,16 @@
 import { OrgSettingsView } from "@/components/orgs/org-settings-view";
-import { useOrgById } from "@/queries/org.queries";
 import { api } from "@/trpc/server";
+import { type Metadata } from "next";
 
 interface Props {
   params: { orgId: string };
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const org = await api.org.getById.query({ id: params.orgId });
+  return {
+    title: `Settings - ${org?.name}`,
+  };
 }
 
 export default async function SettingsProfilePage({

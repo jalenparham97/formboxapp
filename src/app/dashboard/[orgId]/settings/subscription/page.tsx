@@ -4,13 +4,17 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Divider } from "@/components/ui/divider";
 import { api } from "@/trpc/server";
-
-export const metadata = {
-  title: `Subscription - Settings`,
-};
+import { type Metadata } from "next";
 
 interface Props {
   params: { orgId: string };
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const org = await api.org.getById.query({ id: params.orgId });
+  return {
+    title: `Subscription - ${org?.name}`,
+  };
 }
 
 export default async function SettingsSubscriptionPage({
