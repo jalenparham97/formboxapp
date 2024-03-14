@@ -6,7 +6,10 @@ import { type UserNameFields } from "@/types/user.types";
 import { UserSchema } from "@/utils/schemas";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useFileUploadUrlMutation } from "@/queries/storage.queries";
+import {
+  useFileDeleteMutation,
+  useFileUploadUrlMutation,
+} from "@/queries/storage.queries";
 import { nanoid } from "@/libs/nanoid";
 import { env } from "@/env";
 import { useDialog } from "@/hooks/use-dialog";
@@ -31,6 +34,7 @@ export function SettingsView() {
   const user = useAuthUser();
 
   const uploadUrlMutation = useFileUploadUrlMutation();
+  const deleteFileMutation = useFileDeleteMutation();
   const userUpdateMutation = useUserUpdateMutation();
 
   const onSubmit = async (data: UserNameFields) => {
@@ -42,7 +46,25 @@ export function SettingsView() {
     }
   };
 
+  const deleteCurrentUserImage = async (
+    userImage: string | null | undefined,
+  ) => {
+    if (!userImage) return;
+
+    if (!userImage.startsWith(env.NEXT_PUBLIC_R2_PUBLIC_BUCKET_URL)) return;
+
+    const fileKey = userImage.split("/").pop() as string;
+
+    try {
+      return await deleteFileMutation.mutateAsync({ fileKey });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const onFileUpload = async (file: File) => {
+    await deleteCurrentUserImage(user?.image);
+
     const fileKey = `${user?.id}-${nanoid()}-${file.name}`;
     const { uploadUrl } = await uploadUrlMutation.mutateAsync({
       fileKey,
@@ -60,6 +82,8 @@ export function SettingsView() {
   };
 
   const onUrlUpload = async (url: string) => {
+    await deleteCurrentUserImage(user?.image);
+
     await userUpdateMutation.mutateAsync({
       image: url,
     });
@@ -154,6 +178,41 @@ export function SettingsView() {
           </Card>
 
           <Card className="w-full">
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="p-6">
+                <div>
+                  <h2 className="text-lg font-semibold">Email</h2>
+                  <p className="mt-2 text-gray-600">
+                    Please enter the email address you want to use to log in
+                    with Formbox.
+                  </p>
+                </div>
+                <div className="mt-5">
+                  {!user && (
+                    <Skeleton className="h-[36px] w-[420px] rounded-lg" />
+                  )}
+                  {user && (
+                    <Input
+                      className="w-[420px]"
+                      defaultValue={user?.email || ""}
+                      disabled
+                    />
+                  )}
+                </div>
+              </div>
+              <Divider />
+              <div className="p-6">
+                <p className="text-gray-600">
+                  You cannot change your email at this time.
+                </p>
+                {/* <Button type="submit" loading={userUpdateMutation.isLoading}>
+                  Save changes
+                </Button> */}
+              </div>
+            </form>
+          </Card>
+
+          {/* <Card className="w-full">
             <div className="p-6">
               <div>
                 <h2 className="text-lg font-semibold">Delete account</h2>
@@ -168,7 +227,7 @@ export function SettingsView() {
             <div className="p-6">
               <Button variant="destructive">Delete account</Button>
             </div>
-          </Card>
+          </Card> */}
         </div>
 
         <ImageUploader
