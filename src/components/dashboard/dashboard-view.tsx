@@ -19,8 +19,7 @@ import { PageTitle } from "../ui/page-title";
 import { SearchInput } from "../ui/search-input";
 import { useDebouncedState } from "@/hooks/use-debounced-state";
 import { Button } from "../ui/button";
-import { OrgInviteAcceptModal } from "../orgs/org-invite-accept-dialog";
-import { useOrgById } from "@/queries/org.queries";
+import { useOrgById, useOrgMemberRole } from "@/queries/org.queries";
 import { Badge } from "../ui/badge";
 import { FormCreateDialog } from "../forms/form-create-dialog";
 import { useInfiniteForms } from "@/queries/form.queries";
@@ -29,6 +28,8 @@ import { Skeleton } from "../ui/skeleton";
 import { FormCardActionsMenu } from "../forms/form-card-actions-menu";
 import { hasFeatureAccess } from "@/utils/has-feature-access";
 import { LimitReachedModal } from "../ui/limit-reached-modal";
+import { useAuthUser } from "@/queries/user.queries";
+import { AdminRequiredTooltip } from "../ui/admin-required-tooltip";
 
 const loadingItems = new Array(5).fill("");
 
@@ -54,14 +55,11 @@ export function DashboardView({ orgId }: Props) {
   const [searchString, setSearchString] = useDebouncedState("", 250);
   const [formCreateDialog, formCreateDialogHandler] = useDialog();
   const [limitReachedModal, limitReachedModalHandlers] = useDialog();
-  const [acceptModal, acceptModalHandler] = useDialog();
-  const org = useOrgById(orgId);
 
-  useEffect(() => {
-    if (org?.error?.data?.code === "CONFLICT") {
-      acceptModalHandler.open();
-    }
-  }, [acceptModalHandler, org?.error]);
+  const user = useAuthUser();
+
+  const org = useOrgById(orgId);
+  const { data: userRole } = useOrgMemberRole(user?.id as string, orgId);
 
   const forms = useInfiniteForms({ orgId, searchString });
 
@@ -102,6 +100,7 @@ export function DashboardView({ orgId }: Props) {
             <Button
               leftIcon={<IconPlus size={16} />}
               onClick={openCreateFormModal}
+              disabled={userRole?.role === "viewer"}
             >
               Create form
             </Button>
@@ -152,7 +151,10 @@ export function DashboardView({ orgId }: Props) {
                               <Badge variant="red">Closed</Badge>
                             )}
                           </div>
-                          <FormCardActionsMenu form={form as FormOutput} />
+                          <FormCardActionsMenu
+                            form={form as FormOutput}
+                            disabled={userRole?.role === "viewer"}
+                          />
                         </div>
                       </div>
                     </Card>
@@ -169,12 +171,26 @@ export function DashboardView({ orgId }: Props) {
                 subtitle="Get started by creating a new form."
                 icon={<IconFileDescription size={40} />}
                 actionButton={
-                  <Button
-                    leftIcon={<IconPlus size={16} />}
-                    onClick={openCreateFormModal}
-                  >
-                    Create form
-                  </Button>
+                  <>
+                    {userRole?.role === "viewer" ? (
+                      <AdminRequiredTooltip message="You need to be a Admin to create a form">
+                        <Button
+                          leftIcon={<IconPlus size={16} />}
+                          onClick={openCreateFormModal}
+                          disabled
+                        >
+                          Create form
+                        </Button>
+                      </AdminRequiredTooltip>
+                    ) : (
+                      <Button
+                        leftIcon={<IconPlus size={16} />}
+                        onClick={openCreateFormModal}
+                      >
+                        Create form
+                      </Button>
+                    )}
+                  </>
                 }
               />
             </div>
@@ -208,13 +224,6 @@ export function DashboardView({ orgId }: Props) {
         open={limitReachedModal}
         onClose={limitReachedModalHandlers.close}
         href={`/dashboard/${orgId}/settings/subscription`}
-      />
-
-      <OrgInviteAcceptModal
-        open={acceptModal}
-        onClose={acceptModalHandler.close}
-        orgName={org?.error?.message}
-        orgId={orgId}
       />
     </MaxWidthWrapper>
   );

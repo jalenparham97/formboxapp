@@ -21,6 +21,7 @@ export const Roles = {
   OWNER: "owner",
   ADMIN: "admin",
   MEMBER: "member",
+  VIEWER: "viewer",
 } as const;
 
 export const MIME_TYPES = {

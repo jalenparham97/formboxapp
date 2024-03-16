@@ -18,6 +18,12 @@ import { api } from "@/trpc/react";
 import { Card } from "../ui/card";
 import { Badge } from "../ui/badge";
 import {
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
+import {
   useCreateOrgInviteMutation,
   useOrgById,
   useOrgInvites,
@@ -28,6 +34,7 @@ import type { OrgMember } from "@/types/org.types";
 import { Roles } from "@/types/utility.types";
 import { OrgInviteDialog } from "./org-invite-dialog";
 import { useAuthUser } from "@/queries/user.queries";
+import { OrgMemberActionsMenu } from "./org-member-actions-menu";
 
 const loadingMembersAndInvites = new Array(3).fill("");
 
@@ -40,10 +47,9 @@ export function OrgMembersView({ orgId }: Props) {
   const apiUtils = api.useUtils();
   const [inviteModal, inviteModalHandler] = useDialog();
   const [inviteDeleteModal, inviteDeleteModalHandler] = useDialog();
-  const [showEmailSent, setShowEmailSent] = useState(false);
-  const [newEmail, setNewEmail] = useState("");
   const [defaultTab, setDefaultTab] = useState("members");
-  const { data: org, isLoading } = useOrgById(orgId);
+  const user = useAuthUser();
+  const { data: org } = useOrgById(orgId);
   const { data: members, isLoading: isMembersLoading } = useOrgMembers(orgId);
   const { data: invites, isLoading: isInvitesLoading } = useOrgInvites(orgId);
 
@@ -65,8 +71,14 @@ export function OrgMembersView({ orgId }: Props) {
     },
   });
 
+  const userMemberRole = members?.find(
+    (member) => member.user.id === user?.id,
+  )?.role;
+
+  const isMemberOrViewer =
+    userMemberRole === Roles.MEMBER || userMemberRole === Roles.VIEWER;
+
   const sendInvite = async (email: string) => {
-    setNewEmail(email);
     await createInviteMutation.mutateAsync({
       email,
       orgId,
@@ -95,13 +107,34 @@ export function OrgMembersView({ orgId }: Props) {
             </p>
           </div>
           <div>
-            <Button
-              variant="outline"
-              leftIcon={<IconPlus size={16} />}
-              onClick={inviteModalHandler.open}
-            >
-              Invite member
-            </Button>
+            {isMemberOrViewer && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger className="cursor-not-allowed">
+                    <Button
+                      variant="outline"
+                      leftIcon={<IconPlus size={16} />}
+                      disabled
+                    >
+                      Invite member
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Only members with the Admin role can invite members.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+
+            {!isMemberOrViewer && (
+              <Button
+                variant="outline"
+                leftIcon={<IconPlus size={16} />}
+                onClick={inviteModalHandler.open}
+              >
+                Invite member
+              </Button>
+            )}
           </div>
         </div>
 
@@ -134,7 +167,12 @@ export function OrgMembersView({ orgId }: Props) {
                   </div>
                 )}
                 {members?.map((member, index) => (
-                  <MemberCard member={member} index={index} key={member?.id} />
+                  <MemberCard
+                    member={member}
+                    index={index}
+                    key={member?.id}
+                    userMemberRole={userMemberRole}
+                  />
                 ))}
               </div>
             </TabsContent>
@@ -208,13 +246,39 @@ export function OrgMembersView({ orgId }: Props) {
                             />
                           }
                           actionButton={
-                            <Button
-                              variant="outline"
-                              leftIcon={<IconPlus size={16} />}
-                              onClick={inviteModalHandler.open}
-                            >
-                              Invite member
-                            </Button>
+                            <>
+                              {isMemberOrViewer && (
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger className="cursor-not-allowed">
+                                      <Button
+                                        variant="outline"
+                                        leftIcon={<IconPlus size={16} />}
+                                        disabled
+                                      >
+                                        Invite member
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>
+                                        Only members with the Admin role can
+                                        invite members.
+                                      </p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              )}
+
+                              {!isMemberOrViewer && (
+                                <Button
+                                  variant="outline"
+                                  leftIcon={<IconPlus size={16} />}
+                                  onClick={inviteModalHandler.open}
+                                >
+                                  Invite member
+                                </Button>
+                              )}
+                            </>
                           }
                         />
                       </div>
@@ -239,9 +303,10 @@ export function OrgMembersView({ orgId }: Props) {
 interface MemberProps {
   member: OrgMember;
   index: number;
+  userMemberRole?: string;
 }
 
-function MemberCard({ member, index }: MemberProps) {
+function MemberCard({ member, index, userMemberRole }: MemberProps) {
   const user = useAuthUser();
   const router = useRouter();
   const [deleteModal, deleteModalHandler] = useDialog();
@@ -255,8 +320,21 @@ function MemberCard({ member, index }: MemberProps) {
     }
   };
 
-  const isMemberRole = member.role === Roles.MEMBER;
-  const isOwnerRole = member.role === Roles.OWNER;
+  const isMemberRole = userMemberRole === Roles.MEMBER;
+  const isViewerRole = userMemberRole === Roles.VIEWER;
+
+  function getMemberRoleBadgeVariant() {
+    if (member.role === Roles.MEMBER) {
+      return "yellow";
+    }
+    if (member.role === Roles.ADMIN) {
+      return "blue";
+    }
+    if (member.role === Roles.VIEWER) {
+      return "green";
+    }
+    return "gray";
+  }
 
   return (
     <div
@@ -284,21 +362,11 @@ function MemberCard({ member, index }: MemberProps) {
         <p className="text-gray-600">
           Joined {dayjs(member.createdAt).fromNow()}
         </p>
-        <Badge
-          variant={isMemberRole ? "yellow" : "gray"}
-          className="capitalize"
-        >
+        <Badge variant={getMemberRoleBadgeVariant()} className="capitalize">
           {member.role}
         </Badge>
-        {!isOwnerRole && (
-          <Button
-            variant="outline"
-            size="icon"
-            className="h-7 w-7"
-            onClick={deleteModalHandler.open}
-          >
-            <IconTrash size={16} className="text-red-500" />
-          </Button>
+        {!isMemberRole && !isViewerRole && member.role !== "owner" && (
+          <OrgMemberActionsMenu member={member} />
         )}
       </div>
 

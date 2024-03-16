@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import {
   useOrgById,
   useOrgDeleteMutation,
+  useOrgMemberRole,
   useOrgUpdateMutation,
 } from "@/queries/org.queries";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useDialog } from "@/hooks/use-dialog";
 import { OrgDeleteDialog } from "./org-delete-dialog";
 import { useRouter } from "next/navigation";
+import { useAuthUser } from "@/queries/user.queries";
 
 interface Props {
   orgId: string;
@@ -25,6 +27,8 @@ export function OrgSettingsView({ orgId }: Props) {
   const [orgName, setOrgName] = useState<string | null | undefined>("");
 
   const org = useOrgById(orgId);
+  const user = useAuthUser();
+  const { data: userRole } = useOrgMemberRole(user?.id as string, orgId);
 
   useEffect(() => {
     setOrgName(org?.data?.name);
@@ -77,6 +81,7 @@ export function OrgSettingsView({ orgId }: Props) {
                     className="w-[420px]"
                     defaultValue={orgName || ""}
                     onChange={(e) => setOrgName(e.currentTarget.value)}
+                    disabled={userRole?.role === "viewer"}
                   />
                 )}
               </div>
@@ -86,7 +91,11 @@ export function OrgSettingsView({ orgId }: Props) {
               <Button
                 type="submit"
                 loading={orgUpdateMutation.isLoading}
-                disabled={orgName === "" || orgName === org?.data?.name}
+                disabled={
+                  orgName === "" ||
+                  orgName === org?.data?.name ||
+                  userRole?.role === "viewer"
+                }
               >
                 Save changes
               </Button>
@@ -107,7 +116,11 @@ export function OrgSettingsView({ orgId }: Props) {
           </div>
           <Divider />
           <div className="p-6">
-            <Button variant="destructive" onClick={deleteModalHandler.open}>
+            <Button
+              variant="destructive"
+              onClick={deleteModalHandler.open}
+              disabled={userRole?.role === "viewer"}
+            >
               Delete organization
             </Button>
           </div>

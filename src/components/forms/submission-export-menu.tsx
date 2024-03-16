@@ -17,38 +17,34 @@ interface Props {
 
 export function SubmissionExportMenu({ formId, isSpam }: Props) {
   return (
-    <div>
-      <div>
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <Button variant="outline" leftIcon={<IconDownload size={16} />}>
-              Export
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="center" className="w-[170px]">
-            <Link
-              href={`/api/exports/submissions/${formId}?format=csv&isSpam=${isSpam}`}
-              download={true}
-              target="_blank"
-            >
-              <DropdownMenuItem>
-                <IconFileDownload className="mr-2 h-4 w-4" />
-                <span>Download CSV</span>
-              </DropdownMenuItem>
-            </Link>
-            <Link
-              href={`/api/exports/submissions/${formId}?format=json&isSpam=${isSpam}`}
-              download={true}
-              target="_blank"
-            >
-              <DropdownMenuItem>
-                <IconFileDownload className="mr-2 h-4 w-4" />
-                <span>Download JSON</span>
-              </DropdownMenuItem>
-            </Link>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" leftIcon={<IconDownload size={16} />}>
+          Export
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="center" className="w-[170px]">
+        <Link
+          href={`/api/exports/submissions/${formId}?format=csv&isSpam=${isSpam}`}
+          download={true}
+          target="_blank"
+        >
+          <DropdownMenuItem>
+            <IconFileDownload className="mr-2 h-4 w-4" />
+            <span>Download CSV</span>
+          </DropdownMenuItem>
+        </Link>
+        <Link
+          href={`/api/exports/submissions/${formId}?format=json&isSpam=${isSpam}`}
+          download={true}
+          target="_blank"
+        >
+          <DropdownMenuItem>
+            <IconFileDownload className="mr-2 h-4 w-4" />
+            <span>Download JSON</span>
+          </DropdownMenuItem>
+        </Link>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

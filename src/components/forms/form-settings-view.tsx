@@ -20,8 +20,9 @@ import { MaxWidthWrapper } from "../ui/max-width-wrapper";
 import { FormDeleteDialog } from "./form-delete-dialog";
 import { FormRespondantEmailTemplateDialog } from "./form-respondant-email-template-dialog";
 import { type Feature, hasFeatureAccess } from "@/utils/has-feature-access";
-import { useOrgById } from "@/queries/org.queries";
+import { useOrgById, useOrgMemberRole } from "@/queries/org.queries";
 import { Badge } from "../ui/badge";
+import { useAuthUser } from "@/queries/user.queries";
 
 function getEmailsToNotify(emails: string[]) {
   return emails.map((email) => email.trim()).join(", ");
@@ -47,6 +48,8 @@ export function FormSettingsView({ orgId, formId }: Props) {
   }, [formData]);
 
   const org = useOrgById(orgId);
+  const user = useAuthUser();
+  const { data: userRole } = useOrgMemberRole(user?.id as string, orgId);
 
   const updateMutation = useFormUpdateMutation();
   const deleteMutation = useFormDeleteMutation(orgId);
@@ -344,6 +347,7 @@ export function FormSettingsView({ orgId, formId }: Props) {
                   className="sm:w-[400px]"
                   defaultValue={form?.name}
                   onChange={handleNameChange}
+                  disabled={userRole?.role === "viewer"}
                 />
               </div>
             </div>
@@ -379,6 +383,7 @@ export function FormSettingsView({ orgId, formId }: Props) {
                   variant="outline"
                   leftIcon={<IconTrash size={16} className="text-red-600" />}
                   onClick={deleteModalHandler.open}
+                  disabled={userRole?.role === "viewer"}
                 >
                   Delete
                 </Button>
@@ -410,6 +415,7 @@ export function FormSettingsView({ orgId, formId }: Props) {
                 <Switch
                   checked={form?.sendEmailNotifications}
                   onCheckedChange={handleEmailNotificationChange}
+                  disabled={userRole?.role === "viewer"}
                 />
               </div>
             </div>
@@ -422,6 +428,7 @@ export function FormSettingsView({ orgId, formId }: Props) {
                   placeholder="e.g. email@example.com, email2@example.com"
                   defaultValue={getEmailsToNotify(form?.emailsToNotify || [""])}
                   onChange={handleEmailsToNotifyChange}
+                  disabled={userRole?.role === "viewer"}
                 />
               </div>
             )}
@@ -448,7 +455,9 @@ export function FormSettingsView({ orgId, formId }: Props) {
                 <Switch
                   checked={form?.sendRespondantEmailNotifications}
                   onCheckedChange={handleRespondantEmailNotificationChange}
-                  disabled={!hasAccess("Auto responses")}
+                  disabled={
+                    !hasAccess("Auto responses") || userRole?.role === "viewer"
+                  }
                 />
               </div>
             </div>
@@ -470,7 +479,10 @@ export function FormSettingsView({ orgId, formId }: Props) {
                     <Button
                       variant="outline"
                       onClick={respondantEmailModalHandler.open}
-                      disabled={!hasAccess("Auto responses")}
+                      disabled={
+                        !hasAccess("Auto responses") ||
+                        userRole?.role === "viewer"
+                      }
                     >
                       Edit template
                     </Button>
@@ -504,6 +516,7 @@ export function FormSettingsView({ orgId, formId }: Props) {
                 <Switch
                   checked={form?.isClosed}
                   onCheckedChange={handleCloseFormChange}
+                  disabled={userRole?.role === "viewer"}
                 />
               </div>
             </div>
@@ -525,6 +538,7 @@ export function FormSettingsView({ orgId, formId }: Props) {
                 <Switch
                   checked={form?.limitResponses}
                   onCheckedChange={handleLimitResponsesChange}
+                  disabled={userRole?.role === "viewer"}
                 />
               </div>
             </div>
@@ -536,6 +550,7 @@ export function FormSettingsView({ orgId, formId }: Props) {
                   type="number"
                   defaultValue={form?.maxResponses || Infinity}
                   onChange={handleMaxResponsesChange}
+                  disabled={userRole?.role === "viewer"}
                 />
               </div>
             )}
@@ -603,7 +618,9 @@ export function FormSettingsView({ orgId, formId }: Props) {
                 <Switch
                   checked={form?.useCustomRedirect}
                   onCheckedChange={handleUseCustomRedirectChange}
-                  disabled={!hasAccess("Custom redirect")}
+                  disabled={
+                    !hasAccess("Custom redirect") || userRole?.role === "viewer"
+                  }
                 />
               </div>
             </div>
@@ -626,7 +643,10 @@ export function FormSettingsView({ orgId, formId }: Props) {
                       placeholder="https://example.com/thanks"
                       defaultValue={form?.customSuccessUrl}
                       onChange={handleSuccessUrlChange}
-                      disabled={!hasAccess("Custom redirect")}
+                      disabled={
+                        !hasAccess("Custom redirect") ||
+                        userRole?.role === "viewer"
+                      }
                     />
                   </div>
                 </div>
@@ -691,7 +711,9 @@ export function FormSettingsView({ orgId, formId }: Props) {
                 placeholder="_botvortex"
                 defaultValue={form?.customHoneypot}
                 onChange={handleCustomHoneypotChange}
-                disabled={!hasAccess("Custom honeypot")}
+                disabled={
+                  !hasAccess("Custom honeypot") || userRole?.role === "viewer"
+                }
               />
             </div>
           </div>
@@ -709,6 +731,7 @@ export function FormSettingsView({ orgId, formId }: Props) {
                 <Switch
                   checked={form?.googleRecaptchaEnabled}
                   onCheckedChange={handleGoogleRecaptchaChange}
+                  disabled={userRole?.role === "viewer"}
                 />
               </div>
             </div>
@@ -732,6 +755,7 @@ export function FormSettingsView({ orgId, formId }: Props) {
                       className="mt-4"
                       defaultValue={form?.googleRecaptchaSecretKey}
                       onChange={handleGoogleRecaptchaKeyChange}
+                      disabled={userRole?.role === "viewer"}
                     />
                   </div>
                 </div>
@@ -764,7 +788,9 @@ export function FormSettingsView({ orgId, formId }: Props) {
                 <Switch
                   checked={form?.webhookEnabled}
                   onCheckedChange={handleWebhookEnabledChange}
-                  disabled={!hasAccess("Webhooks")}
+                  disabled={
+                    !hasAccess("Webhooks") || userRole?.role === "viewer"
+                  }
                 />
               </div>
             </div>
@@ -787,7 +813,9 @@ export function FormSettingsView({ orgId, formId }: Props) {
                       placeholder="https://example.com/webhook"
                       defaultValue={form?.webhookUrl}
                       onChange={handleWebhookUrlChange}
-                      disabled={!hasAccess("Webhooks")}
+                      disabled={
+                        !hasAccess("Webhooks") || userRole?.role === "viewer"
+                      }
                     />
                   </div>
                 </div>
@@ -802,7 +830,7 @@ export function FormSettingsView({ orgId, formId }: Props) {
           <Button
             leftIcon={<IconDeviceFloppy size={16} />}
             loading={updateMutation.isLoading}
-            disabled={isEqual(formData, form)}
+            disabled={isEqual(formData, form) || userRole?.role === "viewer"}
             onClick={() => handleSettingsSave()}
           >
             Save changes

@@ -204,6 +204,29 @@ export const orgRouter = createTRPCRouter({
         },
       });
     }),
+  getMemberRole: protectedProcedure
+    .input(z.object({ id: z.string(), orgId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.db.orgMember.findUnique({
+        where: { userId_orgId: { userId: input.id, orgId: input.orgId } },
+        select: {
+          role: true,
+        },
+      });
+    }),
+  updateMemberRole: protectedProcedure
+    .input(
+      z.object({
+        memberId: z.string(),
+        role: z.enum(["admin", "member", "viewer"]),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db.orgMember.update({
+        where: { id: input.memberId },
+        data: { role: input.role },
+      });
+    }),
   deleteMember: protectedProcedure
     .input(z.object({ memberId: z.string() }))
     .mutation(async ({ ctx, input }) => {
@@ -254,7 +277,7 @@ export const orgRouter = createTRPCRouter({
       // here we use a try catch to account for the case where the user has already been invited
       // for which `prisma.orgInvite.create()` will throw a unique constraint error
       try {
-        await ctx.db.orgInvite.create({
+        const invite = await ctx.db.orgInvite.create({
           data: {
             email,
             expires,
@@ -271,7 +294,7 @@ export const orgRouter = createTRPCRouter({
         });
 
         const params = new URLSearchParams({
-          callbackUrl: `${env.NEXTAUTH_URL}/dashboard/${orgId}`,
+          callbackUrl: `${env.NEXTAUTH_URL}/invite?orgId=${invite.orgId}&email=${invite.email}`,
           token,
           email,
         });
@@ -297,12 +320,48 @@ export const orgRouter = createTRPCRouter({
         });
       }
     }),
+  getInvite: protectedProcedure
+    .input(z.object({ orgId: z.string(), email: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const invite = await ctx.db.orgInvite.findFirst({
+        where: {
+          email: input?.email as string,
+          orgId: input.orgId,
+        },
+        select: {
+          expires: true,
+          orgId: true,
+          org: {
+            select: {
+              name: true,
+              user: true,
+            },
+          },
+        },
+      });
+
+      if (!invite) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Invalid invitation",
+        });
+      }
+
+      if (invite.expires < new Date()) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "Invitation expired",
+        });
+      }
+
+      return invite;
+    }),
   acceptInvite: protectedProcedure
-    .input(z.object({ orgId: z.string() }))
+    .input(z.object({ orgId: z.string(), email: z.string().optional() }))
     .mutation(async ({ ctx, input }) => {
       const invite = await ctx.db.orgInvite.findFirst({
         where: {
-          email: ctx.user.email as string,
+          email: input?.email as string,
           orgId: input.orgId,
         },
         select: {

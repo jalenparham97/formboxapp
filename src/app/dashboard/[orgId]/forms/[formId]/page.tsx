@@ -3,7 +3,7 @@ import { api } from "@/trpc/server";
 import { type Metadata } from "next";
 
 interface Props {
-  params: { formId: string };
+  params: { formId: string; orgId: string };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -13,6 +13,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default function Page({ params: { formId } }: Props) {
-  return <FormSubmissionsView formId={formId} />;
+export default function Page({ params: { formId, orgId } }: Props) {
+  return <FormSubmissionsView formId={formId} orgId={orgId} />;
 }

@@ -24,9 +24,13 @@ import { DeleteDialog } from "../ui/delete-dialog";
 
 interface Props {
   submission: SubmissionOutput;
+  disabled?: boolean;
 }
 
-export function SubmissionCardActionsMenu({ submission }: Props) {
+export function SubmissionCardActionsMenu({
+  submission,
+  disabled = false,
+}: Props) {
   const [openDialog, openDialogHandlers] = useDialog();
 
   const handleDeleteForm = useSubmissionDeleteMutation(
@@ -43,44 +47,16 @@ export function SubmissionCardActionsMenu({ submission }: Props) {
       {submission && (
         <div>
           <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Button variant="ghost" className="h-auto p-1.5 text-gray-400">
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="h-auto p-1.5 text-gray-400 data-[state=open]:bg-accent data-[state=open]:text-gray-900"
+                disabled={disabled}
+              >
                 <IconDots size={18} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[170px]">
-              {/* <Link href={`/editor/${form.id}/create`}>
-                <DropdownMenuItem>
-                  <IconPencil className="mr-2 h-4 w-4" />
-                  <span>Edit form</span>
-                </DropdownMenuItem>
-              </Link>
-              <Link href={`/dashboard/${form.orgId}/forms/${form.id}`}>
-                <DropdownMenuItem>
-                  <IconInbox className="mr-2 h-4 w-4" />
-                  <span>Submissions</span>
-                </DropdownMenuItem>
-              </Link>
-              <Link href={`/dashboard/${form.orgId}/forms/${form.id}/share`}>
-                <DropdownMenuItem>
-                  <IconShare className="mr-2 h-4 w-4" />
-                  <span>Share</span>
-                </DropdownMenuItem>
-              </Link>
-              <Link
-                href={`/dashboard/${form.orgId}/forms/${form.id}/integrations`}
-              >
-                <DropdownMenuItem>
-                  <IconBolt className="mr-2 h-4 w-4" />
-                  <span>Integrations</span>
-                </DropdownMenuItem>
-              </Link>
-              <Link href={`/dashboard/${form.orgId}/forms/${form.id}/settings`}>
-                <DropdownMenuItem>
-                  <IconSettings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
-                </DropdownMenuItem>
-              </Link> */}
               <DropdownMenuItem
                 className="!text-red-500 hover:!bg-red-500/5"
                 onClick={(e) => {
