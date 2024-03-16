@@ -13,6 +13,7 @@ import { SubmissionCardActionsMenu } from "./submission-card-actions-menu";
 import { formatDate } from "@/utils/format-date";
 import { cn } from "@/utils/tailwind-helpers";
 import { Badge } from "@/components/ui/badge";
+import { Roles } from "@/types/utility.types";
 
 const getEmail = (submission: SubmissionOutput) => {
   return (
@@ -24,9 +25,10 @@ const getEmail = (submission: SubmissionOutput) => {
 
 interface Props {
   submission: SubmissionOutput;
+  userRole: string | undefined;
 }
 
-export function SubmissionCard({ submission }: Props) {
+export function SubmissionCard({ submission, userRole }: Props) {
   return (
     <Card key={submission.id} className="overflow-hidden">
       <Collapsible defaultOpen={true}>
@@ -57,7 +59,10 @@ export function SubmissionCard({ submission }: Props) {
               </div>
               <div className="flex items-center space-x-2">
                 {submission.isSpam && <Badge variant="yellow">Spam</Badge>}
-                <SubmissionCardActionsMenu submission={submission} />
+                <SubmissionCardActionsMenu
+                  submission={submission}
+                  disabled={userRole === Roles.VIEWER}
+                />
               </div>
             </div>
           </div>

@@ -44,8 +44,6 @@ export const env = createEnv({
     R2_SECRET_ACCESS_KEY: z.string(),
     STRIPE_SECRET_KEY: z.string(),
     STRIPE_WEBHOOK_SECRET: z.string(),
-    MONGO_API_KEY: z.string(),
-    MONGO_APP_ID: z.string(),
   },
 
   /**
@@ -86,8 +84,6 @@ export const env = createEnv({
     R2_SECRET_ACCESS_KEY: process.env.R2_SECRET_ACCESS_KEY,
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
     STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
-    MONGO_API_KEY: process.env.MONGO_API_KEY,
-    MONGO_APP_ID: process.env.MONGO_APP_ID,
 
     // Client ENV
     NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:

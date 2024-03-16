@@ -23,9 +23,10 @@ import { FormDeleteDialog } from "./form-delete-dialog";
 
 interface Props {
   form: FormOutput;
+  disabled?: boolean;
 }
 
-export function FormCardActionsMenu({ form }: Props) {
+export function FormCardActionsMenu({ form, disabled = false }: Props) {
   const [openDialog, openDialogHandlers] = useDialog();
 
   const handleDeleteForm = useFormDeleteMutation(form?.orgId as string);
@@ -40,8 +41,11 @@ export function FormCardActionsMenu({ form }: Props) {
       {form && (
         <div>
           <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Button variant="ghost" className="h-auto p-1.5 text-gray-400">
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="h-auto p-1.5 text-gray-400 data-[state=open]:bg-accent data-[state=open]:text-gray-900"
+              >
                 <IconDots size={18} />
               </Button>
             </DropdownMenuTrigger>
@@ -75,6 +79,7 @@ export function FormCardActionsMenu({ form }: Props) {
               <DropdownMenuItem
                 className="!text-red-500 hover:!bg-red-500/5"
                 onClick={openDialogHandlers.open}
+                disabled={disabled}
               >
                 <IconTrash className="mr-2 h-4 w-4" />
                 <span>Delete</span>

@@ -34,9 +34,10 @@ export const formatSubs = (submissions: InfiniteSubmissionsData) => {
 
 interface Props {
   formId: string;
+  userRole: string | undefined;
 }
 
-export function SubmissionInboxView({ formId }: Props) {
+export function SubmissionInboxView({ formId, userRole }: Props) {
   const { ref, inView } = useInView();
   const [searchString, setSearchString] = useDebouncedState("", 250);
 
@@ -87,7 +88,11 @@ export function SubmissionInboxView({ formId }: Props) {
           <div className="mt-6">
             <div className="space-y-4">
               {data?.map((submission) => (
-                <SubmissionCard key={submission.id} submission={submission} />
+                <SubmissionCard
+                  key={submission.id}
+                  submission={submission}
+                  userRole={userRole}
+                />
               ))}
             </div>
           </div>

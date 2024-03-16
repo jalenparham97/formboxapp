@@ -1,7 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useOrgById } from "@/queries/org.queries";
+import { useOrgById, useOrgMemberRole } from "@/queries/org.queries";
+import { useAuthUser } from "@/queries/user.queries";
 import { api } from "@/trpc/react";
 import { IconExternalLink } from "@tabler/icons-react";
 
@@ -11,6 +12,9 @@ interface Props {
 
 export default function ManageSubscriptionButton({ orgId }: Props) {
   const { data: org } = useOrgById(orgId);
+  const user = useAuthUser();
+  const { data: userRole } = useOrgMemberRole(user?.id as string, orgId);
+
   const portalMutation = api.payment.getBillingPortalSession.useMutation();
 
   const handleGetBillingPortal = async () => {
@@ -28,7 +32,7 @@ export default function ManageSubscriptionButton({ orgId }: Props) {
         onClick={handleGetBillingPortal}
         leftIcon={<IconExternalLink size={16} />}
         loading={portalMutation.isLoading}
-        disabled={!org?.stripeSubscriptionId}
+        disabled={!org?.stripeSubscriptionId || userRole?.role === "viewer"}
       >
         Billing portal
       </Button>

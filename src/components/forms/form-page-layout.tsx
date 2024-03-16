@@ -8,6 +8,9 @@ import { Button } from "@/components/ui/button";
 import { MaxWidthWrapper } from "@/components/ui/max-width-wrapper";
 import { Badge } from "@/components/ui/badge";
 import { useFormById } from "@/queries/form.queries";
+import { useOrgMemberRole } from "@/queries/org.queries";
+import { useAuthUser } from "@/queries/user.queries";
+import { ViewAlert } from "../ui/viewer-alert";
 
 interface Props {
   children: React.ReactNode;
@@ -16,10 +19,17 @@ interface Props {
 }
 
 export function FormPageLayout({ children, formId, orgId }: Props) {
+  const user = useAuthUser();
+  const { data: userRole } = useOrgMemberRole(user?.id as string, orgId);
   const form = useFormById(formId);
 
   return (
     <MaxWidthWrapper className="py-10">
+      {userRole?.role === "viewer" && (
+        <div className="mb-6">
+          <ViewAlert />
+        </div>
+      )}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
           {form.isLoading && (

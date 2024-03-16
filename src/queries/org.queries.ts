@@ -13,6 +13,10 @@ export const useOrgMembers = (orgId: string) => {
   return api.org.getMembers.useQuery({ id: orgId });
 };
 
+export const useOrgMemberRole = (memberId: string, orgId: string) => {
+  return api.org.getMemberRole.useQuery({ id: memberId, orgId });
+};
+
 export const useOrgInvites = (orgId: string) => {
   return api.org.getInvites.useQuery({ id: orgId });
 };
@@ -118,7 +122,7 @@ export const useCreateOrgInviteMutation = () => {
 
   return api.org.createInvite.useMutation({
     onSuccess: async (data, input) => {
-      router.push(`/${input.orgId}/settings/members?tab=invites`);
+      router.push(`/dashboard/${input.orgId}/settings/members?tab=invites`);
     },
     onError: (error) => {
       console.log(error);
@@ -126,6 +130,28 @@ export const useCreateOrgInviteMutation = () => {
     },
     onSettled: async (data, _, input) => {
       apiUtils.org.getInvites.invalidate({ id: input.orgId });
+    },
+  });
+};
+
+export const useOrgUpdateMemberRoleMutation = (orgId: string) => {
+  const apiUtils = api.useUtils();
+
+  return api.org.updateMemberRole.useMutation({
+    onMutate: async () => {
+      await apiUtils.org.getMembers.cancel({ id: orgId });
+      const previousQueryData = apiUtils.org.getMembers.getData({
+        id: orgId,
+      });
+      return { previousQueryData };
+    },
+    onError: (error, _, ctx) => {
+      console.log(error);
+      apiUtils.org.getMembers.setData({ id: orgId }, ctx?.previousQueryData);
+      toast.error("Error", { description: error.message });
+    },
+    onSettled: async () => {
+      await apiUtils.org.getMembers.invalidate({ id: orgId });
     },
   });
 };
