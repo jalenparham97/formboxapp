@@ -2,6 +2,7 @@
 // It contains the logic for the background job and may take a long time to execute.
 
 import SubmissionEmailTemplate from "@/emails/submission-email-template";
+import { env } from "@/env";
 import { sendBatchSubmissionNotificationEmail } from "@/libs/mail";
 import { type Answer } from "@prisma/client";
 
@@ -18,7 +19,12 @@ export async function POST(request: Request) {
     return {
       to: email,
       subject: `New submission for ${formName}`,
-      react: SubmissionEmailTemplate({ formName, formLink, answers }),
+      react: SubmissionEmailTemplate({
+        formName,
+        formLink,
+        answers,
+        logoImageBaseUrl: `${env.NEXT_PUBLIC_R2_PUBLIC_BUCKET_URL}/formbox-logo.png`,
+      }),
     };
   });
 

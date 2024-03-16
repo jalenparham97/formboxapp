@@ -3,7 +3,6 @@ import { Resend } from "resend";
 import type { Answer } from "@prisma/client";
 import OrgInviteEmailTemplate from "@/emails/org-invite-email-template";
 import SignInEmailTemplate from "@/emails/signin-email";
-import WorkspaceInviteEmailTemplate from "@/emails/workspace-invite-email-template";
 
 export const resend = new Resend(env.RESEND_API_KEY);
 
@@ -14,21 +13,12 @@ export async function sendMagicLink(email: string, link: string) {
     subject: "Sign in to Formbox",
     from: emailFrom,
     to: email,
-    react: <SignInEmailTemplate email={email} link={link} />,
-  });
-}
-
-export async function sendWorkspaceInviteEmail(
-  email: string,
-  workspaceName: string,
-  link: string,
-) {
-  return await resend.emails.send({
-    subject: "You've been invited to join a workspace on Formbox",
-    from: emailFrom,
-    to: email,
     react: (
-      <WorkspaceInviteEmailTemplate workspaceName={workspaceName} link={link} />
+      <SignInEmailTemplate
+        email={email}
+        link={link}
+        logoImageBaseUrl={`${env.NEXT_PUBLIC_R2_PUBLIC_BUCKET_URL}/formbox-logo.png`}
+      />
     ),
   });
 }
@@ -42,7 +32,13 @@ export async function sendOrgInviteEmail(
     subject: "You've been invited to join an organization on Formbox",
     from: emailFrom,
     to: email,
-    react: <OrgInviteEmailTemplate orgName={orgName} link={link} />,
+    react: (
+      <OrgInviteEmailTemplate
+        orgName={orgName}
+        link={link}
+        logoImageBaseUrl={`${env.NEXT_PUBLIC_R2_PUBLIC_BUCKET_URL}/formbox-logo.png`}
+      />
+    ),
   });
 }
 
