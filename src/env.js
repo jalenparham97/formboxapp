@@ -44,6 +44,7 @@ export const env = createEnv({
     R2_SECRET_ACCESS_KEY: z.string(),
     STRIPE_SECRET_KEY: z.string(),
     STRIPE_WEBHOOK_SECRET: z.string(),
+    NANGO_SECRET_KEY: z.string(),
   },
 
   /**
@@ -56,6 +57,7 @@ export const env = createEnv({
     NEXT_PUBLIC_UNSPLASH_ACCESS_KEY: z.string(),
     NEXT_PUBLIC_R2_PUBLIC_BUCKET_URL: z.string(),
     NEXT_PUBLIC_SUBMISSIONS_API_URL: z.string(),
+    NEXT_PUBLIC_NANGO_KEY: z.string(),
   },
 
   /**
@@ -84,6 +86,7 @@ export const env = createEnv({
     R2_SECRET_ACCESS_KEY: process.env.R2_SECRET_ACCESS_KEY,
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
     STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+    NANGO_SECRET_KEY: process.env.NANGO_SECRET_KEY,
 
     // Client ENV
     NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
@@ -94,6 +97,7 @@ export const env = createEnv({
       process.env.NEXT_PUBLIC_R2_PUBLIC_BUCKET_URL,
     NEXT_PUBLIC_SUBMISSIONS_API_URL:
       process.env.NEXT_PUBLIC_SUBMISSIONS_API_URL,
+    NEXT_PUBLIC_NANGO_KEY: process.env.NEXT_PUBLIC_NANGO_KEY,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

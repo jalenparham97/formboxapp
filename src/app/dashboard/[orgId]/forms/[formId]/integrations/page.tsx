@@ -1,3 +1,4 @@
+import { FormIntegrationsView } from "@/components/forms/form-integrations-view";
 import { api } from "@/trpc/server";
 import { type Metadata } from "next";
 
@@ -13,5 +14,5 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default function IntegrationsPage({ params: { orgId, formId } }: Props) {
-  return <div>Integrations Page</div>;
+  return <FormIntegrationsView orgId={orgId} formId={formId} />;
 }

@@ -15,11 +15,18 @@ export const authRoutes = ["/auth/login"];
  * Routes that start with this prefix are used for API authentication purposes
  */
 export const apiAuthPrefix = "/api/auth";
+
 /**
  * The prefix for API job routes
  * Routes that start with this prefix are used for qstash/upstash job processing
  */
 export const apiJobsPrefix = "/api/jobs";
+
+/**
+ * The prefix for API integrations routes
+ * Routes that start with this prefix are used for qstash/upstash integrations processing
+ */
+export const apiIntegrationsPrefix = "/api/integrations";
 
 /**
  * The prefix for TRPC routes

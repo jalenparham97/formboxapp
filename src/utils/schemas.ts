@@ -81,6 +81,26 @@ export const formUpdateSchema = z.object({
     .nullable(),
 });
 
+export const integrationCreateSchema = z.object({
+  type: z.enum([
+    "google-sheets",
+    "slack",
+    "airtable",
+    "notion",
+    "mailchimp",
+    "github",
+  ]),
+  orgId: z.string(),
+  formId: z.string(),
+  connectionId: z.string(),
+  isEnabled: z.boolean().default(true),
+});
+
+export const integrationUpdateSchema = z.object({
+  id: z.string(),
+  isEnabled: z.boolean().optional(),
+});
+
 const SortOperators = {
   ASC: "asc",
   DESC: "desc",

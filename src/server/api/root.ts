@@ -5,6 +5,7 @@ import { paymentRouter } from "./routers/payment.router";
 import { orgRouter } from "./routers/org.router";
 import { formsRouter } from "./routers/forms.router";
 import { submissionsRouter } from "./routers/submissions.router";
+import { integrationsRouter } from "./routers/integrations.router";
 
 /**
  * This is the primary router for your server.
@@ -18,6 +19,7 @@ export const appRouter = createTRPCRouter({
   org: orgRouter,
   form: formsRouter,
   submission: submissionsRouter,
+  integration: integrationsRouter,
 });
 
 // export type definition of API

@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import { authConfig } from "@/auth.config";
 import {
   apiAuthPrefix,
+  apiIntegrationsPrefix,
   apiJobsPrefix,
   authRoutes,
   publicRoutes,
@@ -16,10 +17,13 @@ export default auth((req) => {
 
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
   const isApiJobsRoute = nextUrl.pathname.startsWith(apiJobsPrefix);
+  const isApiIntegrationsRoute = nextUrl.pathname.startsWith(
+    apiIntegrationsPrefix,
+  );
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
-  if (isApiAuthRoute || isApiJobsRoute) {
+  if (isApiAuthRoute || isApiJobsRoute || isApiIntegrationsRoute) {
     return null;
   }
 

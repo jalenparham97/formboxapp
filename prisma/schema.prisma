@@ -178,6 +178,7 @@ model Form {
     submissions                      Submission[]
     createdAt                        DateTime             @default(now())
     updatedAt                        DateTime             @updatedAt
+    integrations                     Integration[]
 
     @@map("forms")
 }
@@ -225,6 +226,21 @@ type Answer {
     id    String?
     label String
     value String  @default("")
+}
+
+model Integration {
+    id            String   @id @default(auto()) @map("_id") @db.ObjectId
+    orgId         String   @db.ObjectId
+    formId        String   @db.ObjectId
+    connectionId  String   @db.ObjectId
+    type          String
+    isEnabled     Boolean  @default(false)
+    spreadsheetId String?  @default("")
+    form          Form?    @relation(fields: [formId], references: [id], onDelete: Cascade)
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+
+    @@map("integrations")
 }
 
 type FileObject {
