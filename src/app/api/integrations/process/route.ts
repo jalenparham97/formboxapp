@@ -24,6 +24,10 @@ async function handler(req: NextRequest) {
       const { type, isEnabled } = integration;
 
       if (type === "google-sheets" && isEnabled) {
+        console.log(
+          "Destination: ",
+          `${env.NEXTAUTH_URL}/api/integrations/google-sheets`,
+        );
         await qstash.publishJSON({
           url: `${env.NEXTAUTH_URL}/api/integrations/google-sheets`,
           body: {
