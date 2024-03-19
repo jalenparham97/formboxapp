@@ -32,6 +32,8 @@ async function handler(req: NextRequest) {
 
     const { connectionId, spreadsheetId } = integration;
 
+    console.log("Answers: ", data.answers);
+
     await updateSheetHeaders(
       connectionId,
       spreadsheetId as string,

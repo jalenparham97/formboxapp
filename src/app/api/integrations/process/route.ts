@@ -26,9 +26,7 @@ async function handler(req: NextRequest) {
       if (type === "google-sheets" && isEnabled) {
         await qstash.publishJSON({
           url: `${env.APP_URL}/api/integrations/google-sheets`,
-          body: {
-            ...data,
-          },
+          body: data,
         });
       }
     }
