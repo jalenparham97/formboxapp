@@ -23,6 +23,15 @@ import { type Feature, hasFeatureAccess } from "@/utils/has-feature-access";
 import { useOrgById, useOrgMemberRole } from "@/queries/org.queries";
 import { Badge } from "../ui/badge";
 import { useAuthUser } from "@/queries/user.queries";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 function getEmailsToNotify(emails: string[]) {
   return emails.map((email) => email.trim()).join(", ");
@@ -77,6 +86,7 @@ export function FormSettingsView({ orgId, formId }: Props) {
         "limitResponses",
         "maxResponses",
         "saveAnswers",
+        "submissionStorageDuration",
         "showCustomClosedMessage",
         "webhookEnabled",
         "webhookUrl",
@@ -313,6 +323,15 @@ export function FormSettingsView({ orgId, formId }: Props) {
         },
     );
   };
+  const handleStorageDurationChange = (value: string) => {
+    setForm(
+      (prevForm) =>
+        prevForm && {
+          ...prevForm,
+          submissionStorageDuration: value,
+        },
+    );
+  };
   const hasAccess = (feature: Feature) => {
     return hasFeatureAccess(org.data?.stripePlan, feature);
   };
@@ -349,6 +368,42 @@ export function FormSettingsView({ orgId, formId }: Props) {
                   onChange={handleNameChange}
                   disabled={userRole?.role === "viewer"}
                 />
+              </div>
+            </div>
+          </div>
+          <Divider />
+          <div className="px-4 py-5 sm:px-6">
+            <div className="space-y-3 sm:flex sm:items-center sm:justify-between sm:space-x-16 sm:space-y-0">
+              <div className="space-y-1">
+                <h4 className="font-semibold">Submission storage</h4>
+                <p className="text-sm text-gray-600">
+                  Choose how long Formbox stores your form submissions.
+                </p>
+              </div>
+              <div>
+                <Select
+                  value={form?.submissionStorageDuration}
+                  onValueChange={handleStorageDurationChange}
+                  disabled={
+                    userRole?.role === "viewer" ||
+                    !hasAccess("Submission storage duration")
+                  }
+                >
+                  <SelectGroup>
+                    <SelectTrigger className="sm:w-[400px]">
+                      <SelectValue placeholder="Choose a duration" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectLabel>Choose a duration</SelectLabel>
+                      <SelectItem value="never">Never</SelectItem>
+                      <SelectItem value="30">30 Days</SelectItem>
+                      <SelectItem value="60">60 Days</SelectItem>
+                      <SelectItem value="90">90 Days</SelectItem>
+                      <SelectItem value="365">365 Days</SelectItem>
+                      <SelectItem value="forever">Forever</SelectItem>
+                    </SelectContent>
+                  </SelectGroup>
+                </Select>
               </div>
             </div>
           </div>

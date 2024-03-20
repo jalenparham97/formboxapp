@@ -26,7 +26,8 @@ export type Feature =
   | "Integrations"
   | "Custom honeypot"
   | "Basic support"
-  | "Priority support";
+  | "Priority support"
+  | "Submission storage duration";
 
 /**
  * This is a mapping from stripe product ids to the features they unlock.
@@ -94,6 +95,7 @@ const FEATURE_UNLOCKS_BY_PLAN: Record<string, Feature[]> = {
     "Webhooks",
     "Custom honeypot",
     "Priority support",
+    "Submission storage duration",
   ],
 };
 

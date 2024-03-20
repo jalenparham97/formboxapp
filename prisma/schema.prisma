@@ -145,6 +145,7 @@ model Form {
     defaultEmailTo                   String               @default("") // This is the default email to send notifications to
     emailsToNotify                   String[]
     saveAnswers                      Boolean              @default(false)
+    submissionStorageDuration        String               @default("60")
     sendRespondantEmailNotifications Boolean              @default(false)
     respondantEmailFromName          String               @default("")
     respondantEmailSubject           String               @default("")

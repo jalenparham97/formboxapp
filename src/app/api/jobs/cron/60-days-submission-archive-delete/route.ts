@@ -13,14 +13,7 @@ async function handler(_req: NextRequest) {
         createdAt: {
           lte: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
         },
-        form: {
-          org: {
-            stripePlanNickname: {
-              contains: "free",
-              mode: "insensitive",
-            },
-          },
-        },
+        form: { submissionStorageDuration: "60" },
         isSpam: false,
       },
     });

@@ -35,6 +35,7 @@ export const formUpdateSchema = z.object({
   isClosed: z.boolean().optional(),
   removeFormboxBranding: z.boolean().optional(),
   saveAnswers: z.boolean().optional(),
+  submissionStorageDuration: z.string().optional(),
   sendEmailNotifications: z.boolean().optional(),
   sendRespondantEmailNotifications: z.boolean().optional(),
   emailsToNotify: z.array(z.string()).optional(),

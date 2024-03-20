@@ -8,12 +8,33 @@ import {
 } from "@/utils/schemas";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
+function getSubmissionDuration(plan: string) {
+  switch (plan) {
+    case "free":
+      return "60";
+    case "starter":
+      return "90";
+    case "professional":
+      return "365";
+    case "business":
+      return "forever";
+    default:
+      return "60";
+  }
+}
+
 export const formsRouter = createTRPCRouter({
   create: protectedProcedure
     .input(formCreateSchema)
     .mutation(async ({ ctx, input }) => {
+      const org = await ctx.db.org.findUnique({ where: { id: input.orgId } });
+      const duration = getSubmissionDuration(org?.stripePlan ?? "free");
       return ctx.db.form.create({
-        data: { ...input, emailsToNotify: [ctx.user.email as string] },
+        data: {
+          ...input,
+          emailsToNotify: [ctx.user.email as string],
+          submissionStorageDuration: duration,
+        },
       });
     }),
   getAll: protectedProcedure
