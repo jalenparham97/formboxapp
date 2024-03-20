@@ -14,7 +14,7 @@ export const NUMBER_REGEX =
 export const PHONE_NUMBER_REGEX =
   /^\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/;
 
-export const FILTER_TAKE = 20;
+export const FILTER_TAKE = 10;
 
 export const DEFAULT_REDIRECTS = {
   home: "https://formbox.app",

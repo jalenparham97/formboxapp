@@ -30,9 +30,6 @@ export const submissionsRouter = createTRPCRouter({
             },
           },
         },
-        include: {
-          form: true,
-        },
         ...(input.cursor && {
           cursor: {
             id: input.cursor,

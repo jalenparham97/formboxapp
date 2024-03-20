@@ -31,7 +31,12 @@ export const formsRouter = createTRPCRouter({
             mode: "insensitive",
           },
         },
-        include: {
+        select: {
+          id: true,
+          name: true,
+          isClosed: true,
+          createdAt: true,
+          updatedAt: true,
           _count: {
             select: { submissions: true },
           },
@@ -46,11 +51,7 @@ export const formsRouter = createTRPCRouter({
         orderBy: { createdAt: "desc" },
       });
 
-      const total = await ctx.db.form.count({
-        where: orgQuery,
-      });
-
-      const result = { total, data, cursor: "" };
+      const result = { data, cursor: "" };
 
       if (data.length < take) return result;
 
