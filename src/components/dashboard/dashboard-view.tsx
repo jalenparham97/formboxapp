@@ -23,7 +23,11 @@ import { useOrgById, useOrgMemberRole } from "@/queries/org.queries";
 import { Badge } from "../ui/badge";
 import { FormCreateDialog } from "../forms/form-create-dialog";
 import { useInfiniteForms } from "@/queries/form.queries";
-import { type FormOutput, type InfiniteFormsData } from "@/types/form.types";
+import {
+  type FormsOutput,
+  type FormOutput,
+  type InfiniteFormsData,
+} from "@/types/form.types";
 import { Skeleton } from "../ui/skeleton";
 import { FormCardActionsMenu } from "../forms/form-card-actions-menu";
 import { hasFeatureAccess } from "@/utils/has-feature-access";
@@ -34,7 +38,7 @@ import { AdminRequiredTooltip } from "../ui/admin-required-tooltip";
 const loadingItems = new Array(5).fill("");
 
 export const formatForms = (forms: InfiniteFormsData) => {
-  let data: FormOutput[] = [];
+  let data: FormsOutput["data"][0][] = [];
   if (forms) {
     for (const page of forms.pages) {
       data = [...data, ...page.data];
