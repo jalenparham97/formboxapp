@@ -375,7 +375,7 @@ export function FormSettingsView({ orgId, formId }: Props) {
           <div className="px-4 py-5 sm:px-6">
             <div className="space-y-3 sm:flex sm:items-center sm:justify-between sm:space-x-16 sm:space-y-0">
               <div className="space-y-1">
-                <h4 className="font-semibold">Submission storage</h4>
+                <h4 className="font-semibold">Submission storage duration</h4>
                 <p className="text-sm text-gray-600">
                   Choose how long Formbox stores your form submissions.
                 </p>

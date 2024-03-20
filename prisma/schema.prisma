@@ -135,7 +135,7 @@ model Form {
     id                               String               @id @default(auto()) @map("_id") @db.ObjectId
     name                             String
     userId                           String?              @db.ObjectId
-    org                              Org?                 @relation(fields: [orgId], references: [id])
+    org                              Org?                 @relation(fields: [orgId], references: [id], onDelete: Cascade)
     orgId                            String?              @db.ObjectId
     pageMode                         FormPageMode         @default(compact)
     headerImage                      FileObject?
