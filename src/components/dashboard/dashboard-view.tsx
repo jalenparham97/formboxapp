@@ -212,7 +212,7 @@ export function DashboardView({ orgId }: Props) {
         </div>
       )}
 
-      <div ref={ref} className="text-center">
+      <div ref={ref} className="flex items-center justify-center">
         {forms.isFetchingNextPage && <Loader className="mt-5" />}
       </div>
 
