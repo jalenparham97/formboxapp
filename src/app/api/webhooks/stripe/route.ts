@@ -4,13 +4,6 @@ import { env } from "@/env";
 import { db } from "@/server/db";
 import { stripe } from "@/libs/stripe";
 
-const relevantEvents = new Set([
-  "checkout.session.completed",
-  "customer.subscription.created",
-  "customer.subscription.updated",
-  "customer.subscription.deleted",
-]);
-
 export async function POST(req: Request) {
   const body = await req.text();
   const sig = req.headers.get("stripe-signature") as string;
@@ -25,9 +18,9 @@ export async function POST(req: Request) {
     return new Response(`Webhook Error: ${error.message}`, { status: 400 });
   }
 
-  if (relevantEvents.has(event.type)) {
-    try {
-      if (event.type === "checkout.session.completed") {
+  try {
+    switch (event.type) {
+      case "checkout.session.completed":
         const session = event.data.object as Stripe.Checkout.Session;
 
         const subscriptionId = session.subscription as string;
@@ -54,54 +47,58 @@ export async function POST(req: Request) {
             ),
           },
         });
-      } else if (event.type === "customer.subscription.updated") {
-        const subscription = event.data.object as Stripe.Subscription;
+        break;
+      case "customer.subscription.updated":
+        const subscriptionUpdated = event.data.object as Stripe.Subscription;
 
         // Update the price id and set the new period end.
         await db.org.update({
           where: {
-            id: subscription.metadata?.orgId as string,
+            id: subscriptionUpdated.metadata?.orgId as string,
           },
           data: {
-            stripePriceId: subscription.items.data[0]?.price.id,
-            stripeSubscriptionStatus: subscription.status,
-            stripePlanNickname: subscription.items.data[0]?.plan.nickname,
+            stripePriceId: subscriptionUpdated.items.data[0]?.price.id,
+            stripeSubscriptionStatus: subscriptionUpdated.status,
+            stripePlanNickname:
+              subscriptionUpdated.items.data[0]?.plan.nickname,
             stripePlan:
-              subscription.items.data[0]?.plan.nickname?.split("-")[0],
-            stripeCancelAtPeriodEnd: subscription.cancel_at_period_end,
+              subscriptionUpdated.items.data[0]?.plan.nickname?.split("-")[0],
+            stripeCancelAtPeriodEnd: subscriptionUpdated.cancel_at_period_end,
             stripeCurrentPeriodEnd: new Date(
-              subscription.current_period_end * 1000,
+              subscriptionUpdated.current_period_end * 1000,
             ),
           },
         });
-      } else if (event.type === "customer.subscription.deleted") {
-        const subscription = event.data.object as Stripe.Subscription;
+        break;
+      case "customer.subscription.deleted":
+        const subscriptionDeleted = event.data.object as Stripe.Subscription;
 
         await db.org.update({
           where: {
-            id: subscription.metadata?.orgId as string,
+            id: subscriptionDeleted.metadata?.orgId as string,
           },
           data: {
-            stripeSubscriptionStatus: subscription.status,
+            stripeSubscriptionStatus: subscriptionDeleted.status,
             stripePlanNickname: null,
             stripePlan: null,
             stripeCurrentPeriodEnd: new Date(
-              subscription.current_period_end * 1000,
+              subscriptionDeleted.current_period_end * 1000,
             ),
           },
         });
-      } else {
-        throw new Error("Unhandled relevant event!");
-      }
-    } catch (error) {
-      console.error(error);
-      return new Response(
-        "Webhook handler failed. View your nextjs function logs.",
-        {
-          status: 400,
-        },
-      );
+        break;
+      default:
+        console.log(`Unhandled event type ${event.type}`);
     }
+  } catch (error) {
+    console.error(error);
+    return new Response(
+      "Webhook handler failed. View your nextjs function logs.",
+      {
+        status: 400,
+      },
+    );
   }
+
   return new Response(JSON.stringify({ received: true }));
 }

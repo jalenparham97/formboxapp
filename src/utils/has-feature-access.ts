@@ -6,8 +6,8 @@ const BUSINESS_PLAN = "business";
 export type Plan = "free" | "starter" | "professional" | "business";
 
 export type Feature =
-  | "1 forms"
-  | "5 forms"
+  | "3 forms"
+  | "20 forms"
   | "Unlimited forms"
   | "Unlimited team members"
   | "Unlimited form submissions"
@@ -37,7 +37,7 @@ export type Feature =
  */
 const FEATURE_UNLOCKS_BY_PLAN: Record<string, Feature[]> = {
   [FREE_PLAN]: [
-    "1 forms",
+    "3 forms",
     "Unlimited team members",
     "Unlimited form submissions",
     "60 days submission archive",
@@ -48,7 +48,7 @@ const FEATURE_UNLOCKS_BY_PLAN: Record<string, Feature[]> = {
     "Basic support",
   ],
   [STARTER_PLAN]: [
-    "5 forms",
+    "20 forms",
     "Unlimited team members",
     "Unlimited form submissions",
     "90 days submission archive",
@@ -57,7 +57,6 @@ const FEATURE_UNLOCKS_BY_PLAN: Record<string, Feature[]> = {
     "Data export",
     "Email notifications",
     "Custom redirect",
-    "Auto responses",
     "Custom honeypot",
     "Integrations",
     "Basic support",
@@ -72,11 +71,11 @@ const FEATURE_UNLOCKS_BY_PLAN: Record<string, Feature[]> = {
     "Data export",
     "Email notifications",
     "Custom redirect",
-    "Auto responses",
     "Domain restrictions",
     "Integrations",
-    "Webhooks",
+    "Auto responses",
     "Custom honeypot",
+    "Webhooks",
     "Basic support",
   ],
   [BUSINESS_PLAN]: [
@@ -89,13 +88,13 @@ const FEATURE_UNLOCKS_BY_PLAN: Record<string, Feature[]> = {
     "Data export",
     "Email notifications",
     "Custom redirect",
-    "Auto responses",
     "Domain restrictions",
     "Integrations",
-    "Webhooks",
+    "Auto responses",
     "Custom honeypot",
-    "Priority support",
+    "Webhooks",
     "Submission storage duration",
+    "Priority support",
   ],
 };
 

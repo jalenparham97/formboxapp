@@ -82,11 +82,11 @@ export function DashboardView({ orgId }: Props) {
       return formCreateDialogHandler.open();
     }
 
-    if (hasFeatureAccess(plan, "5 forms") && Number(data?.length) < 5) {
+    if (hasFeatureAccess(plan, "20 forms") && Number(data?.length) < 20) {
       return formCreateDialogHandler.open();
     }
 
-    if (hasFeatureAccess(plan, "1 forms") && Number(data?.length) < 1) {
+    if (hasFeatureAccess(plan, "3 forms") && Number(data?.length) < 3) {
       return formCreateDialogHandler.open();
     }
 
